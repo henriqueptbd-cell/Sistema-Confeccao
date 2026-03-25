@@ -1,0 +1,29 @@
+{
+  "name": "sistema-confeccao",
+  "version": "1.0.0",
+  "description": "sistema-confeccao",
+  "homepage": "https://github.com/henriqueptbd-cell/Sistema-Confeccao#readme",
+  "bugs": {
+    "url": "https://github.com/henriqueptbd-cell/Sistema-Confeccao/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/henriqueptbd-cell/Sistema-Confeccao.git"
+  },
+  "license": "ISC",
+  "author": "Henrique",
+  "type": "commonjs",
+  "main": "server.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "start": "node ./src/server.js",
+    "dev": "node --watch ./src/server.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "pg": "^8.20.0"
+  }
+}

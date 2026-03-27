@@ -1,0 +1,116 @@
+/* ========================================
+   FCamargo — Login
+   ======================================== */
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-box {
+  width: 100%;
+  max-width: 420px;
+  background: var(--white);
+  border-radius: 24px;
+  padding: 48px 40px;
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.08);
+  margin: 24px;
+}
+
+.logo-area {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.logo-name {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 32px;
+  letter-spacing: -1px;
+  background: linear-gradient(90deg, var(--accent1), var(--accent4));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.logo-sub {
+  font-size: 12px;
+  color: var(--gray);
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.divider {
+  width: 40px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent1), var(--accent4));
+  border-radius: 2px;
+  margin: 16px auto 0;
+}
+
+.login-box h2 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--dark);
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--gray);
+  margin-bottom: 28px;
+}
+
+.back-link {
+  display: block;
+  text-align: center;
+  margin-top: 24px;
+  font-size: 13px;
+  color: var(--gray);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.back-link:hover { color: var(--dark); }
+
+.back-link span {
+  color: var(--accent4);
+  font-weight: 600;
+}
+
+/* Shake ao tentar entrar com campos vazios */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60%  { transform: translateX(-6px); }
+  40%, 80%  { transform: translateX(6px); }
+}
+
+.btn.shake { animation: shake 0.4s ease; }
+
+/* Spinner do botão de login */
+.btn .spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: white;
+  border-radius: 50%;
+  display: inline-block;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 480px) {
+  .login-box {
+    border-radius: 0;
+    box-shadow: none;
+    margin: 0;
+    min-height: 100vh;
+    padding: 48px 24px;
+  }
+}

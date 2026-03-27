@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FCamargo — Pedido</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/assets/css/main.css"/>
+  <link rel="stylesheet" href="/assets/css/pedido.css"/>
+</head>
+<body>
+
+  <div class="color-bar"></div>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-name">FCamargo</div>
+        <div class="sidebar-logo-sub">Confecção e Estamparia</div>
+      </div>
+      <a href="dashboard.html" class="nav-item active"><span class="nav-icon">📋</span> Pedidos</a>
+      <a href="#" class="nav-item"><span class="nav-icon">👥</span> Clientes</a>
+      <a href="#" class="nav-item"><span class="nav-icon">📊</span> Relatórios</a>
+      <div class="sidebar-bottom">
+        <a href="index.html" class="nav-item"><span class="nav-icon">🚪</span> Sair</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <a href="dashboard.html" class="back-btn">← Voltar aos pedidos</a>
+
+      <div class="page-header">
+        <div>
+          <div class="pedido-titulo">
+            <span>Pedido</span><span id="pedido-id"></span>
+          </div>
+          <div style="margin-top:8px">
+            <span id="pedido-badge" class="badge badge-producao"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <!-- Coluna esquerda -->
+        <div style="display:flex;flex-direction:column;gap:20px;">
+
+          <div class="card">
+            <div class="card-title">Informações do pedido</div>
+            <div class="info-row">
+              <span class="info-label">Cliente</span>
+              <span class="info-value" id="info-cliente"></span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Telefone</span>
+              <span class="info-value" id="info-telefone"></span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Data de entrada</span>
+              <span class="info-value" id="info-entrada"></span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Previsão de entrega</span>
+              <span class="info-value" id="info-prazo"></span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Etapa atual</span>
+              <span class="info-value" id="info-etapa"></span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Peças do pedido</div>
+            <div id="pecas-container"></div>
+            <div class="total-row">
+              <span class="total-label">Total (<span id="total-count"></span> peças)</span>
+              <span class="total-value" id="total-valor"></span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Linha do tempo</div>
+            <div class="timeline" id="timeline-container"></div>
+          </div>
+
+        </div>
+
+        <!-- Coluna direita -->
+        <div>
+          <div class="etapa-card" id="etapa-card"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal de confirmação -->
+  <div class="modal-overlay" id="modal">
+    <div class="modal">
+      <div class="modal-icon">✅</div>
+      <div class="modal-title">Concluir etapa?</div>
+      <div class="modal-sub">
+        Confirma que a etapa <strong id="modal-etapa-atual"></strong> foi concluída?
+        O pedido avançará para <strong id="modal-proxima-etapa"></strong>.
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn modal-btn-cancel" onclick="document.getElementById('modal').classList.remove('visible')">Cancelar</button>
+        <button class="modal-btn modal-btn-confirm" id="btn-confirmar">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/assets/js/dados.js"></script>
+  <script src="/assets/js/pedido.js"></script>
+
+</body>
+</html>

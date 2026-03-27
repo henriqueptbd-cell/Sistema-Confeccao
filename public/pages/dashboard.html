@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FCamargo — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/assets/css/main.css"/>
+  <link rel="stylesheet" href="/assets/css/dashboard.css"/>
+</head>
+<body>
+
+  <div class="color-bar"></div>
+
+  <div class="layout">
+
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-name">FCamargo</div>
+        <div class="sidebar-logo-sub">Confecção e Estamparia</div>
+      </div>
+      <a href="dashboard.html" class="nav-item active">
+        <span class="nav-icon">📋</span> Pedidos
+      </a>
+      <a href="#" class="nav-item">
+        <span class="nav-icon">👥</span> Clientes
+      </a>
+      <a href="#" class="nav-item">
+        <span class="nav-icon">📊</span> Relatórios
+      </a>
+      <div class="sidebar-bottom">
+        <a href="index.html" class="nav-item">
+          <span class="nav-icon">🚪</span> Sair
+        </a>
+      </div>
+    </aside>
+
+    <main class="main">
+
+      <div class="page-header">
+        <div>
+          <div class="page-title">Pedidos</div>
+          <div class="page-sub">26 de março de 2026</div>
+        </div>
+        <button class="btn-new">+ Novo pedido</button>
+      </div>
+
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-label">Em produção</div>
+          <div class="stat-value blue" id="stat-producao">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Próximos do prazo</div>
+          <div class="stat-value red" id="stat-prazo">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Concluídos no mês</div>
+          <div class="stat-value green" id="stat-concluidos">0</div>
+        </div>
+      </div>
+
+      <div class="filters">
+        <button class="filter-btn active">Todos</button>
+        <button class="filter-btn">Em produção</button>
+        <button class="filter-btn">Concluídos</button>
+      </div>
+
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>Pedido</th>
+              <th>Cliente</th>
+              <th>Etapa atual</th>
+              <th>Previsão</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tabela-body"></tbody>
+        </table>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="/assets/js/dados.js"></script>
+  <script src="/assets/js/dashboard.js"></script>
+
+</body>
+</html>

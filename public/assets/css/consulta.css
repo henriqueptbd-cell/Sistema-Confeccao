@@ -1,0 +1,245 @@
+/* ========================================
+   FCamargo — Consulta Pública de Pedido
+   ======================================== */
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ---- Cabeçalho ---- */
+header {
+  width: 100%;
+  background: var(--white);
+  padding: 24px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+}
+
+.logo-name {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 26px;
+  letter-spacing: -1px;
+}
+
+.logo-name span {
+  background: linear-gradient(90deg, var(--accent1), var(--accent4));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.logo-sub {
+  font-size: 11px;
+  color: var(--gray);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.login-link {
+  font-size: 13px;
+  color: var(--gray);
+  text-decoration: none;
+  padding: 8px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.login-link:hover {
+  color: var(--dark);
+  border-color: #ccc;
+  background: var(--gray-light);
+}
+
+/* ---- Conteúdo ---- */
+main {
+  flex: 1;
+  width: 100%;
+  max-width: 520px;
+  padding: 48px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.card {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 36px 32px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+}
+
+.card-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--dark);
+  margin-bottom: 6px;
+}
+
+.card-sub {
+  font-size: 14px;
+  color: var(--gray);
+  margin-bottom: 28px;
+  line-height: 1.5;
+}
+
+/* ---- Campo de busca ---- */
+.search-field { margin-bottom: 16px; }
+
+.search-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dark);
+  margin-bottom: 8px;
+}
+
+.search-field input {
+  width: 100%;
+  padding: 14px 18px;
+  border: 2px solid #e8e8e8;
+  border-radius: 12px;
+  font-size: 18px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  color: var(--dark);
+  outline: none;
+  transition: border-color 0.2s;
+  letter-spacing: 2px;
+}
+
+.search-field input::placeholder {
+  font-weight: 400;
+  color: #ccc;
+  letter-spacing: 0;
+}
+
+.search-field input:focus { border-color: var(--accent4); }
+
+/* ---- Card de resultado ---- */
+.result-card {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+  display: none;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.result-card.visible { display: block; }
+
+.pedido-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.pedido-num {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 20px;
+  color: var(--dark);
+}
+
+.pedido-num span { color: var(--gray); font-weight: 500; font-size: 13px; margin-right: 6px; }
+
+.badge {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-producao { background: #fff3cd; color: #856404; }
+.badge-pronto   { background: #d1f0e0; color: #1a7a42; }
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+}
+
+.info-row:last-of-type { border-bottom: none; }
+.info-label { color: var(--gray); }
+.info-value { font-weight: 600; color: var(--dark); }
+
+/* ---- Timeline ---- */
+.timeline-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--dark);
+  margin: 24px 0 16px;
+}
+
+.timeline { display: flex; flex-direction: column; }
+
+.step { display: flex; align-items: flex-start; gap: 16px; position: relative; }
+
+.step:not(:last-child) .step-line {
+  position: absolute;
+  left: 14px;
+  top: 30px;
+  width: 2px;
+  height: calc(100% + 4px);
+  background: #eee;
+}
+
+.step-done .step-line { background: var(--accent3); }
+
+.step-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+}
+
+.step-done .step-icon    { background: var(--accent3); color: white; }
+.step-current .step-icon { background: var(--accent4); color: white; }
+.step-pending .step-icon { background: #eee; color: #ccc; }
+
+.step-body              { padding-bottom: 20px; }
+.step-name              { font-size: 14px; font-weight: 600; color: var(--dark); }
+.step-pending .step-name { color: #ccc; }
+.step-date              { font-size: 12px; color: var(--gray); margin-top: 2px; }
+
+/* ---- Não encontrado ---- */
+.nao-encontrado {
+  border: 2px dashed #e0e0e0;
+  box-shadow: none;
+}
+
+/* ---- Rodapé ---- */
+footer {
+  padding: 24px;
+  text-align: center;
+  font-size: 12px;
+  color: #bbb;
+}

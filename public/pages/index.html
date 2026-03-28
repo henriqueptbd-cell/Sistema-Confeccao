@@ -37,22 +37,8 @@
     <a href="consulta.html" class="back-link">← Voltar para <span>consulta de pedidos</span></a>
   </div>
 
-  <script>
-    document.getElementById('btn-entrar').addEventListener('click', function () {
-      const email = document.getElementById('email').value.trim();
-      const senha = document.getElementById('senha').value.trim();
-
-      if (!email || !senha) {
-        this.classList.add('shake');
-        setTimeout(() => this.classList.remove('shake'), 500);
-        return;
-      }
-
-      this.disabled = true;
-      this.innerHTML = '<span class="spinner"></span>';
-      setTimeout(() => window.location.href = 'dashboard.html', 1200);
-    });
-  </script>
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/login.js"></script>
 
 </body>
 </html>

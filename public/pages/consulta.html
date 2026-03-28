@@ -27,21 +27,19 @@
 
       <div class="search-field">
         <label for="numeroPedido">Número do pedido</label>
-        <input type="text" id="numeroPedido" placeholder="Ex: 1023" maxlength="10"/>
+        <input type="text" id="numeroPedido" placeholder="Ex: 1001" maxlength="10"/>
       </div>
       <button class="btn" onclick="consultarPedido()">Consultar</button>
     </div>
 
-    <!-- Não encontrado -->
     <div class="result-card nao-encontrado" id="nao-encontrado">
-      <div style="text-align:center;padding:8px 0">
-        <div style="font-size:36px;margin-bottom:12px">🔍</div>
-        <div style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:16px;color:var(--dark);margin-bottom:6px">Pedido não encontrado</div>
-        <div style="font-size:14px;color:var(--gray)">Verifique o número e tente novamente.</div>
+      <div class="nao-encontrado-inner">
+        <div class="nao-encontrado-icon">🔍</div>
+        <div class="nao-encontrado-titulo">Pedido não encontrado</div>
+        <div class="nao-encontrado-sub">Verifique o número e tente novamente.</div>
       </div>
     </div>
 
-    <!-- Resultado -->
     <div class="result-card" id="resultado">
       <div class="pedido-header">
         <div class="pedido-num"><span>Pedido</span><span id="res-numero"></span></div>
@@ -72,7 +70,8 @@
 
   <footer>FCamargo Confecção e Estamparia &nbsp;·&nbsp; Sistema de Pedidos</footer>
 
-  <script src="/assets/js/dados.js"></script>
+  <script src="/assets/js/config.js"></script>
+  <script src="/assets/js/api.js"></script>
   <script src="/assets/js/consulta.js"></script>
 
 </body>

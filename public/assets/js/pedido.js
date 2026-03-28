@@ -1,136 +1,253 @@
-/* ========================================
-   FCamargo — Detalhe do Pedido
-   ======================================== */
-
-document.addEventListener('DOMContentLoaded', () => {
-  const params = new URLSearchParams(window.location.search);
-  const id = parseInt(params.get('id')) || pedidos[0].id;
-  renderPedido(id);
-});
-
-function renderPedido(id) {
-  const pedido = getPedidoComEstado(id);
-  if (!pedido) {
-    document.querySelector('.main').innerHTML = '<p style="padding:32px;color:#999">Pedido não encontrado.</p>';
+document.addEventListener('DOMContentLoaded', async () => {
+  // TODO(segurança): validar JWT no servidor em vez de checar sessionStorage
+  if (!sessionStorage.getItem('usuario')) {
+    window.location.href = 'index.html';
     return;
   }
 
-  /* Título e badge */
-  document.getElementById('pedido-id').textContent = '#' + pedido.id;
-  document.getElementById('pedido-badge').textContent =
-    pedido.status === 'concluido' ? 'Concluído' : 'Em produção';
-  document.getElementById('pedido-badge').className =
-    'badge ' + (pedido.status === 'concluido' ? 'badge-concluido' : 'badge-producao');
+  const id = parseInt(new URLSearchParams(window.location.search).get('id'));
+  if (!id) {
+    window.location.href = 'dashboard.html';
+    return;
+  }
 
-  /* Informações */
-  document.getElementById('info-cliente').textContent    = pedido.cliente;
-  document.getElementById('info-telefone').textContent   = pedido.telefone;
-  document.getElementById('info-entrada').textContent    = pedido.dataEntrada;
-  document.getElementById('info-prazo').textContent      = pedido.prazo;
-  document.getElementById('info-etapa').textContent      =
-    `${ETAPAS[pedido.etapaAtual - 1]} (${pedido.etapaAtual}/${ETAPAS.length})`;
+  await carregarPedido(id);
+});
 
-  /* Peças */
+async function carregarPedido(id) {
+  const pedido = await buscarPedido(id);
+
+  if (!pedido) {
+    document.querySelector('.main').innerHTML =
+      '<p class="pedido-nao-encontrado">Pedido não encontrado.</p>';
+    return;
+  }
+
+  renderCabecalho(pedido);
+  renderInfos(pedido);
   renderPecas(pedido);
-
-  /* Timeline */
-  renderTimeline(pedido);
-
-  /* Card de etapa atual */
+  document.getElementById('timeline-container').innerHTML = renderTimeline(pedido);
   renderEtapaCard(pedido);
+  iniciarBotoesConcluir(pedido);
+  iniciarExcluirPedido(pedido);
 }
 
-/* ---- Peças ---- */
-function renderPecas(pedido) {
-  const container = document.getElementById('pecas-container');
-  const total = totalPedido(pedido);
+function renderCabecalho(pedido) {
+  document.getElementById('pedido-id').textContent = '#' + pedido.id;
+  const badge = document.getElementById('pedido-badge');
+  badge.textContent = pedido.status === 'concluido' ? 'Concluído' : 'Em produção';
+  badge.className   = 'badge ' + (pedido.status === 'concluido' ? 'badge-concluido' : 'badge-producao');
+}
 
-  container.innerHTML = pedido.pecas.map(p => `
-    <div class="peca-row">
-      <span class="peca-label">${p.descricao}</span>
-      <span class="peca-detail">${p.detalhe}</span>
-      <span class="peca-detail">${p.estampa}</span>
-      <span class="peca-valor">R$ ${p.valor.toFixed(2).replace('.', ',')}</span>
+function renderInfos(pedido) {
+  const proxima     = pedido.etapas?.find(e => !e.concluida);
+  const etapaTexto  = pedido.status === 'concluido'
+    ? 'Concluído'
+    : proxima ? proxima.nome : 'Concluído';
+
+  document.getElementById('info-cliente').textContent  = pedido.cliente;
+  document.getElementById('info-telefone').textContent = pedido.telefone;
+  document.getElementById('info-entrada').textContent  = pedido.dataEntrada;
+  document.getElementById('info-prazo').textContent    = pedido.prazo;
+  document.getElementById('info-etapa').textContent    = etapaTexto;
+}
+
+function renderPecas(pedido) {
+  document.getElementById('pecas-container').innerHTML =
+    pedido.pecas.map(p => p.tipo ? renderProdutoNovo(p) : renderProdutoLegado(p)).join('');
+
+  document.getElementById('total-count').textContent = totalPecas(pedido);
+  document.getElementById('total-valor').textContent = formatarMoeda(totalPedido(pedido));
+
+  renderBotaoImagens(pedido);
+}
+
+function renderBotaoImagens(pedido) {
+  const produtos = pedido.pecas.filter(p => p.imagemLink);
+  const btnEl    = document.getElementById('btn-imagens');
+  if (!btnEl) return;
+
+  if (produtos.length === 0) {
+    btnEl.hidden = true;
+    return;
+  }
+
+  btnEl.hidden      = false;
+  btnEl.textContent = `🖼 Imagens (${produtos.length})`;
+  btnEl.onclick     = () => abrirGaleria(produtos);
+
+  document.getElementById('btn-fechar-galeria').onclick = fecharGaleria;
+  document.getElementById('modal-imagens').addEventListener('click', e => {
+    if (e.target.id === 'modal-imagens') fecharGaleria();
+  });
+}
+
+function abrirGaleria(produtos) {
+  const lista = document.getElementById('galeria-lista');
+
+  lista.innerHTML = produtos.map(p => `
+    <div class="galeria-item">
+      <div class="galeria-item-label">${p.tipo || 'Produto'}</div>
+      <img
+        class="galeria-img"
+        src="${p.imagemLink}"
+        alt="Referência: ${p.tipo || ''}"
+        onerror="this.replaceWith(erroImagem('${p.imagemLink}'))"
+      />
+      <a class="galeria-link-externo" href="${p.imagemLink}" target="_blank" rel="noopener">
+        Abrir original ↗
+      </a>
     </div>`).join('');
 
-  document.getElementById('total-count').textContent = pedido.pecas.length;
-  document.getElementById('total-valor').textContent =
-    'R$ ' + total.toFixed(2).replace('.', ',');
+  document.getElementById('modal-imagens').classList.add('visible');
+  document.body.style.overflow = 'hidden';
 }
 
-/* ---- Timeline ---- */
-function renderTimeline(pedido) {
-  const container = document.getElementById('timeline-container');
-
-  container.innerHTML = ETAPAS.map((nome, i) => {
-    const num = i + 1;
-    let classe, icone, dataEl;
-
-    if (num < pedido.etapaAtual) {
-      classe = 'step-done';
-      icone  = '✓';
-      dataEl = `<div class="step-date">${pedido.datas[num] || ''}</div>`;
-    } else if (num === pedido.etapaAtual) {
-      classe = pedido.status === 'concluido' ? 'step-done' : 'step-current';
-      icone  = pedido.status === 'concluido' ? '✓' : '⏳';
-      dataEl = pedido.status === 'concluido'
-        ? `<div class="step-date">${pedido.datas[num] || ''}</div>`
-        : `<div class="step-date">Em andamento</div>`;
-    } else {
-      classe = 'step-pending';
-      icone  = '○';
-      dataEl = '';
-    }
-
-    const linha = num < ETAPAS.length ? '<div class="step-line"></div>' : '';
-
-    return `
-      <div class="step ${classe}">
-        ${linha}
-        <div class="step-icon">${icone}</div>
-        <div class="step-body">
-          <div class="step-name">${nome}</div>
-          ${dataEl}
-        </div>
-      </div>`;
-  }).join('');
+function fecharGaleria() {
+  document.getElementById('modal-imagens').classList.remove('visible');
+  document.body.style.overflow = '';
 }
 
-/* ---- Card de etapa atual ---- */
+function erroImagem(url) {
+  const div = document.createElement('div');
+  div.className = 'galeria-img-erro';
+  div.innerHTML = `
+    <div>🔗 Link externo — não pode ser exibido aqui</div>
+    <a href="${url}" target="_blank" rel="noopener">Abrir no navegador ↗</a>`;
+  return div;
+}
+
+function renderProdutoLegado(p) {
+  return `
+    <div class="peca-row">
+      <span class="peca-label">${p.descricao || ''}</span>
+      <span class="peca-detail">${p.detalhe || ''}</span>
+      <span class="peca-detail">${p.estampa || ''}</span>
+      <span class="peca-valor">${formatarMoeda(p.valor || 0)}</span>
+    </div>`;
+}
+
+function renderProdutoNovo(p) {
+  const qtd = p.tamanhos
+    ? Object.values(p.tamanhos).reduce((s, v) => s + v, 0)
+    : (p.quantidade || 1);
+
+  const detalhes = [
+    p.material,
+    p.modelo,
+    p.gola    ? `Gola ${p.gola}` : null,
+    p.punho   ? `Punho ${p.punho}` : null,
+    p.dedao   ? 'Com dedão' : null,
+    p.capuz && p.capuz !== 'Sem capuz' ? p.capuz : null,
+    p.bolsoZiper ? 'Bolso c/ zíper' : null,
+    p.faces,
+    p.medidas,
+  ].filter(Boolean).join(' · ');
+
+  const tamanhoHtml = p.tamanhos && Object.keys(p.tamanhos).length
+    ? `<div class="produto-tamanhos">${
+        Object.entries(p.tamanhos).map(([tam, qty]) =>
+          `<span class="tam-item"><span class="tam-label">${tam}</span><span class="tam-qty">×${qty}</span></span>`
+        ).join('')
+      }</div>`
+    : '';
+
+  const estampaPartes = [
+    p.estampaTipo,
+    p.estampaCor       ? `Cor: ${p.estampaCor}` : null,
+    p.estampaDescricao || null,
+    // compatibilidade com pedidos no formato antigo
+    p.estampaModelo || null,
+    p.estampaObs    || null,
+  ].filter(Boolean);
+  const estampaHtml = estampaPartes.length
+    ? `<div class="produto-estampa">Estampa: ${estampaPartes.join(' · ')}</div>`
+    : '';
+
+  const obsHtml = p.observacoes
+    ? `<div class="produto-obs">${p.observacoes}</div>`
+    : '';
+
+  // TODO(imagens — Cloudinary): quando o upload estiver ativo, imagemLink será
+  // uma URL gerada pelo Cloudinary (secure_url). O botão abaixo já funciona com
+  // qualquer URL válida — nenhuma mudança necessária aqui na migração.
+  const imagemHtml = p.imagemLink
+    ? `<a class="btn-ver-imagem" href="${p.imagemLink}" target="_blank" rel="noopener">
+         🖼 Ver imagem de referência
+       </a>`
+    : '';
+
+  return `
+    <div class="produto-row">
+      <div class="produto-row-header">
+        <span class="produto-tipo">${p.tipo}</span>
+        <span class="produto-subtotal">${formatarMoeda((p.valorUnitario || 0) * qtd)}</span>
+      </div>
+      ${detalhes ? `<div class="produto-detalhes">${detalhes}</div>` : ''}
+      ${estampaHtml}
+      ${tamanhoHtml}
+      ${obsHtml}
+      ${imagemHtml}
+      <div class="produto-meta">${qtd} ${qtd === 1 ? 'peça' : 'peças'} · ${formatarMoeda(p.valorUnitario || 0)} cada</div>
+    </div>`;
+}
+
 function renderEtapaCard(pedido) {
   const card = document.getElementById('etapa-card');
 
   if (pedido.status === 'concluido') {
     card.innerHTML = `
       <div class="card-title">Status do pedido</div>
-      <div class="etapa-atual-nome" style="color:var(--accent3)">✓ Concluído</div>
+      <div class="etapa-atual-nome etapa-concluida">✓ Concluído</div>
       <div class="etapa-numero">Todas as etapas finalizadas</div>`;
     return;
   }
 
-  const etapaNome   = ETAPAS[pedido.etapaAtual - 1];
-  const proximaNome = ETAPAS[pedido.etapaAtual] || null;
+  const concluidas = pedido.etapas.filter(e => e.concluida).length;
+  const total      = pedido.etapas.length;
+  const pct        = Math.round((concluidas / total) * 100);
 
   card.innerHTML = `
-    <div class="card-title">Etapa atual</div>
-    <div class="etapa-atual-nome">${etapaNome}</div>
-    <div class="etapa-numero">Etapa ${pedido.etapaAtual} de ${ETAPAS.length}</div>
-    <button class="btn-concluir" id="btn-concluir">✓ Concluir etapa</button>
-    <div class="proxima-etapa">
-      Próxima: <span>${proximaNome || '—'}</span>
+    <div class="card-title">Status do pedido</div>
+    <div class="etapa-atual-nome">Em produção</div>
+    <div class="etapa-numero">${concluidas} de ${total} etapas concluídas</div>
+    <div class="etapa-progress-bar">
+      <div class="etapa-progress-fill" style="width:${pct}%"></div>
     </div>`;
+}
 
-  document.getElementById('btn-concluir').addEventListener('click', () => {
-    document.getElementById('modal-etapa-atual').textContent  = etapaNome;
-    document.getElementById('modal-proxima-etapa').textContent = proximaNome || 'conclusão';
-    document.getElementById('modal').classList.add('visible');
+function iniciarExcluirPedido(pedido) {
+  document.getElementById('btn-excluir-pedido').addEventListener('click', async () => {
+    if (!confirm(`Excluir o pedido #${pedido.id} (${pedido.cliente})?\n\nEsta ação não pode ser desfeita.`)) return;
+    await excluirPedido(pedido.id);
+    window.location.href = 'dashboard.html';
   });
 
-  /* Confirmar no modal */
-  document.getElementById('btn-confirmar').onclick = () => {
-    const hoje = new Date().toLocaleDateString('pt-BR');
-    salvarEstado(pedido.id, pedido.etapaAtual + 1, hoje);
-    document.getElementById('modal').classList.remove('visible');
-    renderPedido(pedido.id);
+  document.getElementById('btn-editar-pedido').addEventListener('click', () => {
+    window.location.href = `editar-pedido.html?id=${pedido.id}`;
+  });
+}
+
+function iniciarBotoesConcluir(pedido) {
+  const modal     = document.getElementById('modal');
+  const modalNome = document.getElementById('modal-etapa-atual');
+  const btnConf   = document.getElementById('btn-confirmar');
+
+  document.getElementById('timeline-container').addEventListener('click', e => {
+    const btn = e.target.closest('.step-btn-concluir');
+    if (!btn) return;
+    const ordem = parseInt(btn.dataset.ordem);
+    const etapa = pedido.etapas.find(et => et.ordem === ordem);
+    modalNome.textContent          = etapa.nome;
+    btnConf.dataset.ordemPendente  = ordem;
+    modal.classList.add('visible');
+  });
+
+  btnConf.onclick = async () => {
+    const ordem = parseInt(btnConf.dataset.ordemPendente);
+    if (!ordem) return;
+    await concluirEtapa(pedido.id, ordem);
+    modal.classList.remove('visible');
+    await carregarPedido(pedido.id);
   };
 }

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FCamargo — Dashboard</title>
+  <title>FCamargo — Clientes</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="/assets/css/main.css"/>
   <link rel="stylesheet" href="/assets/css/dashboard.css"/>
@@ -19,10 +19,10 @@
         <div class="sidebar-logo-name">FCamargo</div>
         <div class="sidebar-logo-sub">Confecção e Estamparia</div>
       </div>
-      <a href="dashboard.html" class="nav-item active">
+      <a href="dashboard.html" class="nav-item">
         <span class="nav-icon">📋</span> Pedidos
       </a>
-      <a href="clientes.html" class="nav-item">
+      <a href="clientes.html" class="nav-item active">
         <span class="nav-icon">👥</span> Clientes
       </a>
       <a href="relatorios.html" class="nav-item">
@@ -42,42 +42,27 @@
 
       <div class="page-header">
         <div>
-          <div class="page-title">Pedidos</div>
-          <div class="page-sub" id="data-atual"></div>
+          <div class="page-title">Clientes</div>
+          <div class="page-sub" id="total-clientes"></div>
         </div>
-        <button class="btn-new">+ Novo pedido</button>
+        <button class="btn-new">+ Novo cliente</button>
       </div>
 
-      <div class="stats">
-        <div class="stat-card">
-          <div class="stat-label">Em produção</div>
-          <div class="stat-value blue" id="stat-producao">0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Próximos do prazo</div>
-          <div class="stat-value red" id="stat-prazo">0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Concluídos no mês</div>
-          <div class="stat-value green" id="stat-concluidos">0</div>
-        </div>
-      </div>
-
-      <div class="filters">
-        <button class="filter-btn active">Todos</button>
-        <button class="filter-btn">Em produção</button>
-        <button class="filter-btn">Concluídos</button>
+      <div class="search-bar">
+        <input type="text" id="busca-cliente" class="field-input"
+          placeholder="Buscar por nome, razão social, CPF ou CNPJ..."
+          style="max-width:420px"/>
       </div>
 
       <div class="table-card">
         <table>
           <thead>
             <tr>
-              <th>Pedido</th>
+              <th>#</th>
               <th>Cliente</th>
-              <th>Etapa atual</th>
-              <th>Previsão</th>
-              <th>Status</th>
+              <th>Tipo</th>
+              <th>Documento</th>
+              <th>Telefone</th>
               <th></th>
             </tr>
           </thead>
@@ -88,56 +73,8 @@
     </main>
   </div>
 
-  <!-- Modal: Novo Pedido -->
-  <div class="modal-overlay" id="modal-novo-pedido">
-    <div class="modal-form-container">
-
-      <div class="modal-form-header">
-        <div class="modal-form-title">Novo Pedido</div>
-        <button class="modal-form-close" id="btn-fechar-modal">✕</button>
-      </div>
-
-      <div class="form-section">
-        <div class="form-section-title">Dados do pedido</div>
-        <div style="margin-bottom:16px">
-          <label class="field-label">Cliente *</label>
-          <div class="cliente-search-wrap" id="cliente-search-wrap">
-            <input type="text" id="f-cliente-busca" class="field-input"
-              placeholder="Buscar por nome, CPF ou CNPJ..." autocomplete="off"/>
-            <div class="cliente-dropdown" id="cliente-dropdown" hidden></div>
-          </div>
-          <div class="cliente-selecionado" id="cliente-selecionado" hidden>
-            <span class="cliente-sel-nome" id="cliente-sel-nome"></span>
-            <button type="button" class="btn-trocar-cliente" id="btn-trocar-cliente">× Trocar</button>
-          </div>
-          <input type="hidden" id="f-clienteId"/>
-        </div>
-        <div>
-          <label class="field-label" for="f-prazo">Previsão de entrega *</label>
-          <input type="date" id="f-prazo" class="field-input"/>
-        </div>
-      </div>
-
-      <div class="form-section">
-        <div class="form-section-title">Produtos</div>
-        <div id="produtos-form-list"></div>
-        <button class="btn-add-peca" id="btn-add-produto">+ Adicionar produto</button>
-        <div class="pedido-total-footer" id="pedido-total-footer" hidden>
-          <span class="pedido-total-label">Total do pedido</span>
-          <span class="pedido-total-valor" id="pedido-total-valor">R$ 0,00</span>
-        </div>
-      </div>
-
-      <div class="modal-form-actions">
-        <button class="modal-btn modal-btn-cancel" id="btn-cancelar-novo">Cancelar</button>
-        <button class="modal-btn modal-btn-confirm" id="btn-salvar-pedido">Salvar pedido</button>
-      </div>
-
-    </div>
-  </div>
-
   <!-- Modal: Novo/Editar Cliente -->
-  <div class="modal-overlay" id="modal-novo-cliente" style="z-index:200">
+  <div class="modal-overlay" id="modal-novo-cliente">
     <div class="modal-form-container">
       <div class="modal-form-header">
         <div class="modal-form-title" id="modal-cliente-titulo">Novo Cliente</div>
@@ -259,8 +196,7 @@
   <script src="/assets/js/config.js"></script>
   <script src="/assets/js/api.js"></script>
   <script src="/assets/js/modal-cliente.js"></script>
-  <script src="/assets/js/produto-form.js"></script>
-  <script src="/assets/js/dashboard.js"></script>
+  <script src="/assets/js/clientes.js"></script>
 
 </body>
 </html>

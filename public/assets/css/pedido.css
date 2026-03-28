@@ -112,7 +112,8 @@
   margin-top: 6px;
 }
 
-.badge-producao { background: #fff3cd; color: #856404; }
+.badge-producao  { background: #fff3cd; color: #856404; }
+.badge-concluido { background: #d4f4e3; color: #1e6b3e; }
 
 /* ---- Grid de conteúdo ---- */
 .grid { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
@@ -131,6 +132,136 @@
   color: var(--dark);
   margin-bottom: 20px;
 }
+
+.card-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.card-title-row .card-title { margin-bottom: 0; }
+
+.btn-imagens {
+  padding: 6px 14px;
+  background: #e8f4fd;
+  color: var(--accent4);
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Montserrat', sans-serif;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-imagens:hover { background: #d1eaf9; }
+
+/* ---- Galeria de Imagens ---- */
+.modal-galeria {
+  background: var(--dark);
+  border-radius: 24px;
+  width: 100%;
+  max-width: 680px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  animation: popIn 0.2s ease;
+  overflow: hidden;
+}
+
+.modal-galeria-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 28px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  flex-shrink: 0;
+}
+
+.modal-galeria-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--white);
+}
+
+.modal-galeria-close {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: rgba(255,255,255,0.7);
+  font-size: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.modal-galeria-close:hover { background: rgba(255,255,255,0.2); color: var(--white); }
+
+.galeria-lista {
+  overflow-y: auto;
+  padding: 20px 28px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.galeria-item { display: flex; flex-direction: column; gap: 10px; }
+
+.galeria-item-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.galeria-img {
+  width: 100%;
+  border-radius: 14px;
+  display: block;
+  object-fit: contain;
+  max-height: 480px;
+  background: rgba(255,255,255,0.05);
+}
+
+.galeria-link-externo {
+  font-size: 12px;
+  color: rgba(255,255,255,0.4);
+  text-decoration: none;
+  align-self: flex-end;
+  transition: color 0.15s;
+}
+
+.galeria-link-externo:hover { color: rgba(255,255,255,0.8); }
+
+.galeria-img-erro {
+  width: 100%;
+  padding: 24px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.05);
+  border: 1.5px dashed rgba(255,255,255,0.15);
+  text-align: center;
+  color: rgba(255,255,255,0.5);
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.galeria-img-erro a {
+  color: var(--accent4);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.galeria-img-erro a:hover { text-decoration: underline; }
 
 .info-row {
   display: flex;
@@ -155,6 +286,39 @@
 
 .etapa-card .card-title { color: rgba(255, 255, 255, 0.6); margin-bottom: 8px; }
 
+.etapa-progress-bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+  margin-top: 16px;
+  overflow: hidden;
+}
+
+.etapa-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent3), var(--accent4));
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.step-btn-concluir {
+  flex-shrink: 0;
+  margin-left: auto;
+  padding: 5px 12px;
+  background: #e8f9f0;
+  color: var(--accent3);
+  border: none;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'Montserrat', sans-serif;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.step-btn-concluir:hover { background: #c8f0da; }
+
 .etapa-atual-nome {
   font-family: 'Montserrat', sans-serif;
   font-weight: 900;
@@ -166,35 +330,8 @@
 .etapa-numero {
   font-size: 13px;
   color: rgba(255, 255, 255, 0.4);
-  margin-bottom: 24px;
+  margin-bottom: 4px;
 }
-
-.btn-concluir {
-  width: 100%;
-  padding: 18px;
-  border: none;
-  border-radius: 14px;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 900;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.2s;
-  background: linear-gradient(135deg, var(--accent3), #1e8449);
-  color: var(--white);
-  letter-spacing: 0.3px;
-}
-
-.btn-concluir:hover  { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(39, 174, 96, 0.35); }
-.btn-concluir:active { transform: scale(0.98); }
-
-.proxima-etapa {
-  margin-top: 14px;
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.4);
-  text-align: center;
-}
-
-.proxima-etapa span { color: rgba(255, 255, 255, 0.7); font-weight: 600; }
 
 /* ---- Peças do pedido ---- */
 .peca-row {
@@ -227,7 +364,7 @@
 /* ---- Timeline ---- */
 .timeline { display: flex; flex-direction: column; }
 
-.step { display: flex; align-items: flex-start; gap: 14px; position: relative; }
+.step { display: flex; align-items: center; gap: 14px; position: relative; }
 
 .step:not(:last-child) .step-line {
   position: absolute;
@@ -258,7 +395,7 @@
 .step-current .step-icon { background: var(--accent4); color: white; }
 .step-pending .step-icon { background: #eee; color: #ccc; }
 
-.step-body             { padding-bottom: 18px; }
+.step-body             { flex: 1; padding-bottom: 18px; }
 .step-name             { font-size: 13px; font-weight: 600; color: var(--dark); }
 .step-pending .step-name { color: #bbb; }
 .step-date             { font-size: 11px; color: var(--gray); margin-top: 2px; }
@@ -313,6 +450,110 @@
 .modal-btn-cancel:hover   { background: #e5e5e5; color: var(--dark); }
 .modal-btn-confirm        { background: var(--accent3); color: var(--white); }
 .modal-btn-confirm:hover  { background: #1e8449; }
+
+.header-acoes { display: flex; gap: 10px; align-items: flex-start; }
+
+.btn-editar-pedido {
+  padding: 8px 16px;
+  background: #eaf4fd;
+  color: var(--accent4);
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  align-self: flex-start;
+}
+.btn-editar-pedido:hover { background: #cce4f7; }
+
+.btn-excluir-pedido {
+  padding: 8px 16px;
+  background: #fdedec;
+  color: var(--accent1);
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Montserrat', sans-serif;
+  cursor: pointer;
+  transition: background 0.15s;
+  align-self: flex-start;
+}
+.btn-excluir-pedido:hover { background: #f5b7b1; }
+
+.pedido-left-col  { display: flex; flex-direction: column; gap: 20px; }
+.pedido-badge-wrap { margin-top: 8px; }
+.pedido-nao-encontrado { padding: 32px; color: #999; }
+.etapa-concluida  { color: var(--accent3); }
+
+/* ---- Produto (novo formato) ---- */
+.produto-row {
+  padding: 14px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.produto-row:last-of-type { border-bottom: none; }
+
+.produto-row-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.produto-tipo {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--dark);
+}
+
+.produto-subtotal {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--dark);
+}
+
+.produto-detalhes { font-size: 13px; color: var(--gray); margin-bottom: 4px; }
+.produto-estampa  { font-size: 12px; color: var(--accent4); margin-bottom: 4px; }
+.produto-obs      { font-size: 12px; color: var(--gray); font-style: italic; margin-bottom: 4px; }
+.produto-meta     { font-size: 11px; color: #bbb; margin-top: 6px; }
+
+.btn-ver-imagem {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 5px 12px;
+  background: #e8f4fd;
+  color: var(--accent4);
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.btn-ver-imagem:hover { background: #d1eaf9; }
+
+.produto-tamanhos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 6px 0;
+}
+
+.tam-item {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--gray-light);
+  border-radius: 6px;
+  padding: 3px 8px;
+}
+
+.tam-label { font-size: 11px; font-weight: 700; color: var(--dark); }
+.tam-qty   { font-size: 11px; color: var(--gray); }
 
 /* ---- Responsivo ---- */
 @media (max-width: 900px) {

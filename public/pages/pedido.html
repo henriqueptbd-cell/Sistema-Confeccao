@@ -19,8 +19,9 @@
         <div class="sidebar-logo-sub">Confecção e Estamparia</div>
       </div>
       <a href="dashboard.html" class="nav-item active"><span class="nav-icon">📋</span> Pedidos</a>
-      <a href="#" class="nav-item"><span class="nav-icon">👥</span> Clientes</a>
-      <a href="#" class="nav-item"><span class="nav-icon">📊</span> Relatórios</a>
+      <a href="clientes.html" class="nav-item"><span class="nav-icon">👥</span> Clientes</a>
+      <a href="relatorios.html" class="nav-item"><span class="nav-icon">📊</span> Relatórios</a>
+      <a href="configuracoes.html" class="nav-item" id="nav-config" hidden><span class="nav-icon">⚙️</span> Configurações</a>
       <div class="sidebar-bottom">
         <a href="index.html" class="nav-item"><span class="nav-icon">🚪</span> Sair</a>
       </div>
@@ -34,15 +35,18 @@
           <div class="pedido-titulo">
             <span>Pedido</span><span id="pedido-id"></span>
           </div>
-          <div style="margin-top:8px">
+          <div class="pedido-badge-wrap">
             <span id="pedido-badge" class="badge badge-producao"></span>
           </div>
+        </div>
+        <div class="header-acoes">
+          <button class="btn-editar-pedido" id="btn-editar-pedido">✏️ Editar pedido</button>
+          <button class="btn-excluir-pedido" id="btn-excluir-pedido">🗑 Excluir pedido</button>
         </div>
       </div>
 
       <div class="grid">
-        <!-- Coluna esquerda -->
-        <div style="display:flex;flex-direction:column;gap:20px;">
+        <div class="pedido-left-col">
 
           <div class="card">
             <div class="card-title">Informações do pedido</div>
@@ -69,7 +73,10 @@
           </div>
 
           <div class="card">
-            <div class="card-title">Peças do pedido</div>
+            <div class="card-title-row">
+              <div class="card-title">Peças do pedido</div>
+              <button class="btn-imagens" id="btn-imagens" hidden>🖼 Imagens</button>
+            </div>
             <div id="pecas-container"></div>
             <div class="total-row">
               <span class="total-label">Total (<span id="total-count"></span> peças)</span>
@@ -84,7 +91,6 @@
 
         </div>
 
-        <!-- Coluna direita -->
         <div>
           <div class="etapa-card" id="etapa-card"></div>
         </div>
@@ -92,23 +98,36 @@
     </main>
   </div>
 
-  <!-- Modal de confirmação -->
   <div class="modal-overlay" id="modal">
     <div class="modal">
       <div class="modal-icon">✅</div>
       <div class="modal-title">Concluir etapa?</div>
       <div class="modal-sub">
         Confirma que a etapa <strong id="modal-etapa-atual"></strong> foi concluída?
-        O pedido avançará para <strong id="modal-proxima-etapa"></strong>.
       </div>
       <div class="modal-actions">
-        <button class="modal-btn modal-btn-cancel" onclick="document.getElementById('modal').classList.remove('visible')">Cancelar</button>
+        <button class="modal-btn modal-btn-cancel"
+          onclick="document.getElementById('modal').classList.remove('visible')">
+          Cancelar
+        </button>
         <button class="modal-btn modal-btn-confirm" id="btn-confirmar">Confirmar</button>
       </div>
     </div>
   </div>
 
-  <script src="/assets/js/dados.js"></script>
+  <!-- Modal: Galeria de Imagens -->
+  <div class="modal-overlay" id="modal-imagens">
+    <div class="modal-galeria">
+      <div class="modal-galeria-header">
+        <div class="modal-galeria-title">Imagens de referência</div>
+        <button class="modal-galeria-close" id="btn-fechar-galeria">✕</button>
+      </div>
+      <div class="galeria-lista" id="galeria-lista"></div>
+    </div>
+  </div>
+
+  <script src="/assets/js/config.js"></script>
+  <script src="/assets/js/api.js"></script>
   <script src="/assets/js/pedido.js"></script>
 
 </body>

@@ -1,0 +1,27 @@
+/* ========================================
+   FCamargo — Editar Pedido
+   ======================================== */
+
+.main { padding: 32px 40px; flex: 1; overflow-y: auto; }
+
+.back-btn {
+  display: inline-block;
+  color: var(--text-muted);
+  font-size: 13px;
+  text-decoration: none;
+  margin-bottom: 20px;
+}
+.back-btn:hover { color: var(--text); }
+
+.edit-form-wrap {
+  max-width: 780px;
+}
+
+.edit-form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}

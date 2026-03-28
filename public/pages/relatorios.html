@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FCamargo — Relatórios</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/assets/css/main.css"/>
+  <link rel="stylesheet" href="/assets/css/dashboard.css"/>
+  <link rel="stylesheet" href="/assets/css/relatorios.css"/>
+</head>
+<body>
+
+  <div class="color-bar"></div>
+
+  <div class="layout">
+
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-name">FCamargo</div>
+        <div class="sidebar-logo-sub">Confecção e Estamparia</div>
+      </div>
+      <a href="dashboard.html" class="nav-item">
+        <span class="nav-icon">📋</span> Pedidos
+      </a>
+      <a href="clientes.html" class="nav-item">
+        <span class="nav-icon">👥</span> Clientes
+      </a>
+      <a href="relatorios.html" class="nav-item active">
+        <span class="nav-icon">📊</span> Relatórios
+      </a>
+      <a href="configuracoes.html" class="nav-item" id="nav-config" hidden>
+        <span class="nav-icon">⚙️</span> Configurações
+      </a>
+      <div class="sidebar-bottom">
+        <a href="index.html" class="nav-item">
+          <span class="nav-icon">🚪</span> Sair
+        </a>
+      </div>
+    </aside>
+
+    <main class="main">
+
+      <div class="page-header">
+        <div>
+          <div class="page-title">Relatórios</div>
+          <div class="page-sub" id="periodo-label"></div>
+        </div>
+      </div>
+
+      <!-- Resumo do mês -->
+      <div class="rel-section">
+        <div class="rel-section-title">Resumo do mês</div>
+        <div class="stats-4">
+          <div class="stat-card">
+            <div class="stat-label">Em produção</div>
+            <div class="stat-value blue" id="stat-producao">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Concluídos no mês</div>
+            <div class="stat-value green" id="stat-concluidos">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Faturamento do mês</div>
+            <div class="stat-value" id="stat-faturamento">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Atrasados</div>
+            <div class="stat-value red" id="stat-atrasados">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gargalo + Ranking -->
+      <div class="rel-section">
+        <div class="rel-two-col">
+
+          <div class="rel-card">
+            <div class="rel-card-title">Gargalo de produção</div>
+            <div id="gargalo-container"></div>
+          </div>
+
+          <div class="rel-card">
+            <div class="rel-card-title">Produtos mais pedidos</div>
+            <div id="ranking-container"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Próximos prazos -->
+      <div class="rel-section">
+        <div class="rel-section-title">Próximos prazos — pedidos em produção</div>
+        <div class="prazos-wrap">
+          <div id="prazos-container"></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="/assets/js/config.js"></script>
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/relatorios.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,947 @@
+{
+  "meta": {
+    "proximoId": 1014,
+    "proximoClienteId": 3
+  },
+  "pedidos": [
+    {
+      "id": 1013,
+      "cliente": "henrique",
+      "telefone": "121212121212",
+      "prazo": "02/04/2026",
+      "prazoISO": "2026-04-02",
+      "pecas": [
+        {
+          "tipo": "Camiseta",
+          "estampaTipo": "Personalizado",
+          "estampaDescricao": null,
+          "estampaCor": null,
+          "precoCalculado": 50,
+          "descontoPercentual": 0,
+          "precoFinal": 50,
+          "valorUnitario": 50,
+          "imagemLink": null,
+          "tamanhos": {
+            "4": 4,
+            "10": 10,
+            "GG": 4
+          },
+          "material": "Dry",
+          "modelo": "Manga curta",
+          "gola": "Polo",
+          "punho": "Com",
+          "dedao": false,
+          "capuz": null
+        },
+        {
+          "tipo": "Short",
+          "estampaTipo": "Personalizado",
+          "estampaDescricao": null,
+          "estampaCor": null,
+          "precoCalculado": 45,
+          "descontoPercentual": 0,
+          "precoFinal": 45,
+          "valorUnitario": 45,
+          "imagemLink": null,
+          "tamanhos": {
+            "6": 3
+          },
+          "modelo": "Jet masculino",
+          "bolsoZiper": false
+        }
+      ],
+      "dataEntrada": "28/03/2026",
+      "status": "producao",
+      "etapas": [
+        {
+          "ordem": 1,
+          "nome": "Entrada do pedido",
+          "concluida": true,
+          "concluidaEm": "28/03/2026"
+        },
+        {
+          "ordem": 2,
+          "nome": "Montagem da estampa",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 3,
+          "nome": "Impressão",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 4,
+          "nome": "Corte",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 5,
+          "nome": "Estampa",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 6,
+          "nome": "Triagem para costura",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 7,
+          "nome": "Costura",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 8,
+          "nome": "Arremate",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 9,
+          "nome": "Conferência",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 10,
+          "nome": "Pronto para retirada",
+          "concluida": false,
+          "concluidaEm": null
+        }
+      ]
+    },
+    {
+      "id": 1012,
+      "cliente": "henrique",
+      "telefone": "121212121212",
+      "prazo": "01/04/2026",
+      "prazoISO": "2026-04-01",
+      "pecas": [
+        {
+          "tipo": "Short",
+          "estampaTipo": "Personalizado",
+          "estampaDescricao": null,
+          "estampaCor": null,
+          "precoCalculado": 45,
+          "descontoPercentual": 0,
+          "precoFinal": 45,
+          "valorUnitario": 45,
+          "imagemLink": null,
+          "tamanhos": {
+            "6": 2
+          },
+          "modelo": "Jet masculino",
+          "bolsoZiper": false
+        },
+        {
+          "tipo": "Camiseta",
+          "estampaTipo": "Personalizado",
+          "estampaDescricao": null,
+          "estampaCor": null,
+          "precoCalculado": 50,
+          "descontoPercentual": 0,
+          "precoFinal": 50,
+          "valorUnitario": 50,
+          "imagemLink": null,
+          "tamanhos": {
+            "6": 3
+          },
+          "material": "Confort UV50",
+          "modelo": "Manga curta",
+          "gola": "Gola V",
+          "punho": "Com",
+          "dedao": false,
+          "capuz": null
+        }
+      ],
+      "dataEntrada": "28/03/2026",
+      "status": "producao",
+      "etapas": [
+        {
+          "ordem": 1,
+          "nome": "Entrada do pedido",
+          "concluida": true,
+          "concluidaEm": "28/03/2026"
+        },
+        {
+          "ordem": 2,
+          "nome": "Montagem da estampa",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 3,
+          "nome": "Impressão",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 4,
+          "nome": "Corte",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 5,
+          "nome": "Estampa",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 6,
+          "nome": "Triagem para costura",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 7,
+          "nome": "Costura",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 8,
+          "nome": "Arremate",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 9,
+          "nome": "Conferência",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 10,
+          "nome": "Pronto para retirada",
+          "concluida": false,
+          "concluidaEm": null
+        }
+      ]
+    },
+    {
+      "id": 1011,
+      "cliente": "ricardo",
+      "telefone": "31231231",
+      "prazo": "03/04/2026",
+      "prazoISO": "2026-04-03",
+      "pecas": [
+        {
+          "tipo": "Camiseta",
+          "estampaTipo": "Olívia",
+          "estampaDescricao": null,
+          "estampaCor": null,
+          "precoCalculado": 50,
+          "descontoPercentual": 0,
+          "precoFinal": 50,
+          "valorUnitario": 50,
+          "imagemLink": null,
+          "tamanhos": {
+            "M": 9
+          },
+          "material": "Dry",
+          "modelo": "Manga curta",
+          "gola": "Gola redonda",
+          "punho": "Com",
+          "dedao": false,
+          "capuz": null
+        }
+      ],
+      "dataEntrada": "28/03/2026",
+      "status": "producao",
+      "etapas": [
+        {
+          "ordem": 1,
+          "nome": "Entrada do pedido",
+          "concluida": true,
+          "concluidaEm": "28/03/2026"
+        },
+        {
+          "ordem": 2,
+          "nome": "Montagem da estampa",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 3,
+          "nome": "Impressão",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 4,
+          "nome": "Corte",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 5,
+          "nome": "Estampa",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 6,
+          "nome": "Triagem para costura",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 7,
+          "nome": "Costura",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 8,
+          "nome": "Arremate",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 9,
+          "nome": "Conferência",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 10,
+          "nome": "Pronto para retirada",
+          "concluida": false,
+          "concluidaEm": null
+        }
+      ]
+    },
+    {
+      "id": 1010,
+      "cliente": "henrique",
+      "telefone": "121212121212",
+      "prazo": "13/03/2026",
+      "prazoISO": "2026-03-13",
+      "pecas": [
+        {
+          "tipo": "Camiseta",
+          "estampaTipo": "Personalizado",
+          "estampaDescricao": null,
+          "estampaCor": null,
+          "precoCalculado": 60,
+          "descontoPercentual": 0,
+          "precoFinal": 60,
+          "valorUnitario": 60,
+          "imagemLink": null,
+          "tamanhos": {
+            "G": 2
+          },
+          "material": "Dry",
+          "modelo": "Manga longa",
+          "gola": "Gola redonda",
+          "punho": "Com",
+          "dedao": false,
+          "capuz": "Capuz normal"
+        }
+      ],
+      "dataEntrada": "28/03/2026",
+      "status": "producao",
+      "etapas": [
+        {
+          "ordem": 1,
+          "nome": "Entrada do pedido",
+          "concluida": true,
+          "concluidaEm": "28/03/2026"
+        },
+        {
+          "ordem": 2,
+          "nome": "Montagem da estampa",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 3,
+          "nome": "Impressão",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 4,
+          "nome": "Corte",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 5,
+          "nome": "Estampa",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 6,
+          "nome": "Triagem para costura",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 7,
+          "nome": "Costura",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 8,
+          "nome": "Arremate",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 9,
+          "nome": "Conferência",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 10,
+          "nome": "Pronto para retirada",
+          "concluida": false,
+          "concluidaEm": null
+        }
+      ]
+    },
+    {
+      "id": 1008,
+      "cliente": "ricardo",
+      "telefone": "31231231",
+      "prazo": "26/03/2026",
+      "prazoISO": "2026-03-26",
+      "pecas": [
+        {
+          "tipo": "Short",
+          "estampaTipo": "Olívia",
+          "estampaDescricao": null,
+          "estampaCor": null,
+          "valorUnitario": 23,
+          "imagemLink": null,
+          "tamanhos": {
+            "M": 2
+          },
+          "modelo": "Jet masculino",
+          "bolsoZiper": false
+        }
+      ],
+      "dataEntrada": "28/03/2026",
+      "status": "producao",
+      "etapas": [
+        {
+          "ordem": 1,
+          "nome": "Entrada do pedido",
+          "concluida": true,
+          "concluidaEm": "28/03/2026"
+        },
+        {
+          "ordem": 2,
+          "nome": "Montagem da estampa",
+          "concluida": true,
+          "concluidaEm": "28/03/2026"
+        },
+        {
+          "ordem": 3,
+          "nome": "Impressão",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 4,
+          "nome": "Corte",
+          "concluida": true,
+          "concluidaEm": "28/03/2026"
+        },
+        {
+          "ordem": 5,
+          "nome": "Estampa",
+          "concluida": true,
+          "concluidaEm": "28/03/2026"
+        },
+        {
+          "ordem": 6,
+          "nome": "Triagem para costura",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 7,
+          "nome": "Costura",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 8,
+          "nome": "Arremate",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 9,
+          "nome": "Conferência",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 10,
+          "nome": "Pronto para retirada",
+          "concluida": false,
+          "concluidaEm": null
+        }
+      ]
+    },
+    {
+      "id": 1006,
+      "cliente": "pedro",
+      "telefone": "",
+      "prazo": "04/04/2026",
+      "prazoISO": "2026-04-04",
+      "pecas": [
+        {
+          "tipo": "Camiseta",
+          "estampaTipo": "Personalizado",
+          "estampaDescricao": "frente e costas",
+          "estampaCor": null,
+          "valorUnitario": 40,
+          "imagemLink": null,
+          "tamanhos": {
+            "10": 2,
+            "GG": 5,
+            "BLM": 2
+          },
+          "material": "Dry",
+          "modelo": "Manga longa",
+          "gola": "Polo",
+          "punho": "Sem",
+          "dedao": true,
+          "capuz": "Balaclava"
+        },
+        {
+          "tipo": "Short",
+          "estampaTipo": "Personalizado",
+          "estampaDescricao": null,
+          "estampaCor": null,
+          "valorUnitario": 20,
+          "imagemLink": null,
+          "tamanhos": {
+            "6": 2
+          },
+          "modelo": "Jet feminino",
+          "bolsoZiper": true
+        },
+        {
+          "tipo": "Corta-vento",
+          "estampaTipo": "Personalizado",
+          "estampaDescricao": null,
+          "estampaCor": null,
+          "valorUnitario": 400,
+          "imagemLink": null,
+          "tamanhos": {
+            "GG": 7
+          },
+          "modelo": "Com toca"
+        }
+      ],
+      "dataEntrada": "28/03/2026",
+      "status": "producao",
+      "etapas": [
+        {
+          "ordem": 1,
+          "nome": "Entrada do pedido",
+          "concluida": true,
+          "concluidaEm": "28/03/2026"
+        },
+        {
+          "ordem": 2,
+          "nome": "Montagem da estampa",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 3,
+          "nome": "Impressão",
+          "concluida": true,
+          "concluidaEm": "28/03/2026"
+        },
+        {
+          "ordem": 4,
+          "nome": "Corte",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 5,
+          "nome": "Estampa",
+          "concluida": true,
+          "concluidaEm": "28/03/2026"
+        },
+        {
+          "ordem": 6,
+          "nome": "Triagem para costura",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 7,
+          "nome": "Costura",
+          "concluida": true,
+          "concluidaEm": "28/03/2026"
+        },
+        {
+          "ordem": 8,
+          "nome": "Arremate",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 9,
+          "nome": "Conferência",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 10,
+          "nome": "Pronto para retirada",
+          "concluida": false,
+          "concluidaEm": null
+        }
+      ]
+    },
+    {
+      "id": 1005,
+      "cliente": "teste",
+      "telefone": "1223131231",
+      "prazo": "29/03/2026",
+      "prazoISO": "2026-03-29",
+      "pecas": [
+        {
+          "tipo": "Corta-vento",
+          "estampaTipo": "Olívia",
+          "estampaDescricao": null,
+          "estampaCor": null,
+          "valorUnitario": 100,
+          "imagemLink": null,
+          "tamanhos": {
+            "12": 6,
+            "M": 4,
+            "G": 4
+          },
+          "modelo": "Sem toca"
+        },
+        {
+          "tipo": "Short",
+          "estampaTipo": "Personalizado",
+          "estampaDescricao": null,
+          "estampaCor": null,
+          "valorUnitario": 20,
+          "imagemLink": null,
+          "tamanhos": {
+            "M": 12
+          },
+          "modelo": "Jet feminino",
+          "bolsoZiper": true
+        }
+      ],
+      "dataEntrada": "28/03/2026",
+      "status": "producao",
+      "etapas": [
+        {
+          "ordem": 1,
+          "nome": "Entrada do pedido",
+          "concluida": true,
+          "concluidaEm": "28/03/2026"
+        },
+        {
+          "ordem": 2,
+          "nome": "Montagem da estampa",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 3,
+          "nome": "Impressão",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 4,
+          "nome": "Corte",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 5,
+          "nome": "Estampa",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 6,
+          "nome": "Triagem para costura",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 7,
+          "nome": "Costura",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 8,
+          "nome": "Arremate",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 9,
+          "nome": "Conferência",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 10,
+          "nome": "Pronto para retirada",
+          "concluida": false,
+          "concluidaEm": null
+        }
+      ]
+    },
+    {
+      "id": 1003,
+      "cliente": "ricardo",
+      "telefone": "12999999999",
+      "prazo": "29/03/2026",
+      "prazoISO": "2026-03-29",
+      "pecas": [
+        {
+          "descricao": "camiseta",
+          "detalhe": "manga curta",
+          "estampa": "sublimação",
+          "valor": 50
+        }
+      ],
+      "dataEntrada": "28/03/2026",
+      "status": "producao",
+      "etapas": [
+        {
+          "ordem": 1,
+          "nome": "Entrada do pedido",
+          "concluida": true,
+          "concluidaEm": "28/03/2026"
+        },
+        {
+          "ordem": 2,
+          "nome": "Montagem da estampa",
+          "concluida": true,
+          "concluidaEm": "28/03/2026"
+        },
+        {
+          "ordem": 3,
+          "nome": "Impressão",
+          "concluida": true,
+          "concluidaEm": "28/03/2026"
+        },
+        {
+          "ordem": 4,
+          "nome": "Corte",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 5,
+          "nome": "Estampa",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 6,
+          "nome": "Triagem para costura",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 7,
+          "nome": "Costura",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 8,
+          "nome": "Arremate",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 9,
+          "nome": "Conferência",
+          "concluida": false,
+          "concluidaEm": null
+        },
+        {
+          "ordem": 10,
+          "nome": "Pronto para retirada",
+          "concluida": false,
+          "concluidaEm": null
+        }
+      ]
+    },
+    {
+      "id": 1002,
+      "cliente": "ffsdfsd",
+      "telefone": "12312312412",
+      "prazo": "19/03/2026",
+      "prazoISO": "2026-03-19",
+      "pecas": [
+        {
+          "descricao": "camisera",
+          "detalhe": "",
+          "estampa": "",
+          "valor": 0
+        }
+      ],
+      "dataEntrada": "28/03/2026",
+      "status": "concluido",
+      "etapas": [
+        {
+          "ordem": 1,
+          "nome": "Entrada do pedido",
+          "concluida": true,
+          "concluidaEm": "28/03/2026"
+        },
+        {
+          "ordem": 2,
+          "nome": "Montagem da estampa",
+          "concluida": true,
+          "concluidaEm": "28/03/2026"
+        },
+        {
+          "ordem": 3,
+          "nome": "Impressão",
+          "concluida": true,
+          "concluidaEm": "28/03/2026"
+        },
+        {
+          "ordem": 4,
+          "nome": "Corte",
+          "concluida": true,
+          "concluidaEm": "28/03/2026"
+        },
+        {
+          "ordem": 5,
+          "nome": "Estampa",
+          "concluida": true,
+          "concluidaEm": "28/03/2026"
+        },
+        {
+          "ordem": 6,
+          "nome": "Triagem para costura",
+          "concluida": true,
+          "concluidaEm": "28/03/2026"
+        },
+        {
+          "ordem": 7,
+          "nome": "Costura",
+          "concluida": true,
+          "concluidaEm": "28/03/2026"
+        },
+        {
+          "ordem": 8,
+          "nome": "Arremate",
+          "concluida": true,
+          "concluidaEm": "28/03/2026"
+        },
+        {
+          "ordem": 9,
+          "nome": "Conferência",
+          "concluida": true,
+          "concluidaEm": "28/03/2026"
+        },
+        {
+          "ordem": 10,
+          "nome": "Pronto para retirada",
+          "concluida": false,
+          "concluidaEm": null
+        }
+      ]
+    }
+  ],
+  "clientes": [
+    {
+      "id": 1,
+      "criadoEm": "28/03/2026",
+      "tipoPessoa": "fisica",
+      "telefone": "121212121212",
+      "email": null,
+      "cep": "12328080",
+      "logradouro": "Avenida Malek Assad",
+      "numero": "1213",
+      "complemento": null,
+      "bairro": "Jardim Santa Maria",
+      "municipio": "Jacareí",
+      "uf": "SP",
+      "nome": "henrique",
+      "cpf": "33333333333"
+    },
+    {
+      "id": 2,
+      "criadoEm": "28/03/2026",
+      "tipoPessoa": "fisica",
+      "telefone": "31231231",
+      "email": null,
+      "cep": "12335000",
+      "logradouro": "Avenida dos Migrantes",
+      "numero": "123",
+      "complemento": null,
+      "bairro": "Parque Meia Lua",
+      "municipio": "Jacareí",
+      "uf": "SP",
+      "nome": "ricardo",
+      "cpf": "11231231231"
+    }
+  ],
+  "usuarios": [
+    {
+      "id": 1,
+      "nome": "Administrador",
+      "email": "admin@fcamargo.com",
+      "senha": "admin123",
+      "role": "admin"
+    }
+  ],
+  "configPrecos": {
+    "precoBase": {
+      "Camiseta": {
+        "Manga curta": 50,
+        "Manga longa": 55,
+        "Regata": 50
+      },
+      "Short": {
+        "Jet masculino": 45,
+        "Jet feminino": 45,
+        "Futebol": 45
+      },
+      "Corta-vento": {
+        "Com toca": 160,
+        "Sem toca": 160
+      },
+      "Bandeira": 20
+    },
+    "adicionais": {
+      "punho": 0,
+      "dedao": 5,
+      "capuzNormal": 5,
+      "capuzNinja": 5,
+      "balaclava": 5,
+      "bolsoZiper": 5,
+      "segundaFace": 20
+    },
+    "descontoMaximo": 10
+  }
+}

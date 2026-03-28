@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FCamargo — Editar Pedido</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/assets/css/main.css"/>
+  <link rel="stylesheet" href="/assets/css/dashboard.css"/>
+  <link rel="stylesheet" href="/assets/css/editar-pedido.css"/>
+</head>
+<body>
+
+  <div class="color-bar"></div>
+
+  <div class="layout">
+
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-name">FCamargo</div>
+        <div class="sidebar-logo-sub">Confecção e Estamparia</div>
+      </div>
+      <a href="dashboard.html" class="nav-item active">
+        <span class="nav-icon">📋</span> Pedidos
+      </a>
+      <a href="clientes.html" class="nav-item">
+        <span class="nav-icon">👥</span> Clientes
+      </a>
+      <a href="relatorios.html" class="nav-item">
+        <span class="nav-icon">📊</span> Relatórios
+      </a>
+      <a href="configuracoes.html" class="nav-item" id="nav-config" hidden>
+        <span class="nav-icon">⚙️</span> Configurações
+      </a>
+      <div class="sidebar-bottom">
+        <a href="index.html" class="nav-item">
+          <span class="nav-icon">🚪</span> Sair
+        </a>
+      </div>
+    </aside>
+
+    <main class="main">
+
+      <a class="back-btn" id="back-btn" href="dashboard.html">← Voltar ao pedido</a>
+
+      <div class="page-header">
+        <div>
+          <div class="page-title">Editar Pedido <span id="edit-pedido-id"></span></div>
+          <div class="page-sub" id="edit-cliente-nome"></div>
+        </div>
+      </div>
+
+      <div class="edit-form-wrap">
+
+        <div class="form-section">
+          <div class="form-section-title">Previsão de entrega</div>
+          <input type="date" id="edit-prazo" class="field-input" style="max-width:220px"/>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">Produtos</div>
+          <div id="produtos-form-list"></div>
+          <button class="btn-add-peca" id="btn-add-produto">+ Adicionar produto</button>
+          <div class="pedido-total-footer" id="pedido-total-footer" hidden>
+            <span class="pedido-total-label">Total do pedido</span>
+            <span class="pedido-total-valor" id="pedido-total-valor">R$ 0,00</span>
+          </div>
+        </div>
+
+        <div class="edit-form-actions">
+          <button class="modal-btn modal-btn-cancel" id="btn-cancelar-edicao">Cancelar</button>
+          <button class="modal-btn modal-btn-confirm" id="btn-salvar-edicao">Salvar alterações</button>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <script src="/assets/js/config.js"></script>
+  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/produto-form.js"></script>
+  <script src="/assets/js/editar-pedido.js"></script>
+
+</body>
+</html>

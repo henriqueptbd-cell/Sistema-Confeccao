@@ -236,6 +236,11 @@ main {
   box-shadow: none;
 }
 
+.nao-encontrado-inner  { text-align: center; padding: 8px 0; }
+.nao-encontrado-icon   { font-size: 36px; margin-bottom: 12px; }
+.nao-encontrado-titulo { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 16px; color: var(--dark); margin-bottom: 6px; }
+.nao-encontrado-sub    { font-size: 14px; color: var(--gray); }
+
 /* ---- Rodapé ---- */
 footer {
   padding: 24px;

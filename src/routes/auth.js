@@ -1,13 +1,7 @@
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
 
 const router = express.Router();
-const DB_PATH = path.resolve(__dirname, '../../data/db.json');
-
-function lerDb() {
-  return JSON.parse(fs.readFileSync(DB_PATH, 'utf-8'));
-}
+const { lerDb } = require('../db');
 
 // TODO(segurança): substituir comparação de senha por bcrypt.compare()
 // TODO(segurança): emitir JWT com expiração em vez de sessionStorage no cliente

@@ -1,19 +1,9 @@
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
 
 const router = express.Router();
-const DB_PATH = path.resolve(__dirname, '../../data/db.json');
+const { lerDb, salvarDb } = require('../db');
 
 // TODO(migração): substituir lerDb/salvarDb por queries PostgreSQL (pool.query)
-
-function lerDb() {
-  return JSON.parse(fs.readFileSync(DB_PATH, 'utf-8'));
-}
-
-function salvarDb(db) {
-  fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), 'utf-8');
-}
 
 // GET /api/clientes?q=texto — busca ou lista todos
 router.get('/', (req, res) => {

@@ -1,9 +1,7 @@
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
 
 const router = express.Router();
-const DB_PATH = path.resolve(__dirname, '../../data/db.json');
+const { lerDb, salvarDb } = require('../db');
 
 // TODO(segurança): proteger estas rotas com middleware de autenticação JWT
 // TODO(migração): substituir lerDb/salvarDb por queries PostgreSQL (pool.query)

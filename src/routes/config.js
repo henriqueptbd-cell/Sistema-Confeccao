@@ -1,12 +1,7 @@
 const express = require('express');
-const fs      = require('fs');
-const path    = require('path');
 
 const router  = express.Router();
-const DB_PATH = path.resolve(__dirname, '../../data/db.json');
-
-function lerDb()      { return JSON.parse(fs.readFileSync(DB_PATH, 'utf-8')); }
-function salvarDb(db) { fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), 'utf-8'); }
+const { lerDb, salvarDb } = require('../db');
 
 router.get('/precos', (req, res) => {
   const db = lerDb();

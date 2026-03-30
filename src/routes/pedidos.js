@@ -19,14 +19,6 @@ const NOMES_ETAPAS = [
   'Pronto para retirada',
 ];
 
-function lerDb() {
-  return JSON.parse(fs.readFileSync(DB_PATH, 'utf-8'));
-}
-
-function salvarDb(db) {
-  fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2), 'utf-8');
-}
-
 function criarEtapas(hoje) {
   return NOMES_ETAPAS.map((nome, i) => ({
     ordem:       i + 1,
@@ -61,10 +53,11 @@ router.get('/:id', (req, res) => {
 router.post('/', (req, res) => {
   const db = lerDb();
   const hoje = new Date().toLocaleDateString('pt-BR');
-  const { cliente, telefone, prazo, prazoISO, pecas = [] } = req.body;
+  const { clienteId, cliente, telefone, prazo, prazoISO, pecas = [] } = req.body;
 
   const novoPedido = {
     id: db.meta.proximoId++,
+    clienteId: clienteId || null,
     cliente,
     telefone,
     prazo,

@@ -30,13 +30,22 @@ async function carregarPedido(id) {
   renderEtapaCard(pedido);
   iniciarBotoesConcluir(pedido);
   iniciarExcluirPedido(pedido);
+  iniciarBotaoEntregar(pedido);
 }
 
 function renderCabecalho(pedido) {
   document.getElementById('pedido-id').textContent = '#' + pedido.id;
   const badge = document.getElementById('pedido-badge');
-  badge.textContent = pedido.status === 'concluido' ? 'Concluído' : 'Em produção';
-  badge.className   = 'badge ' + (pedido.status === 'concluido' ? 'badge-concluido' : 'badge-producao');
+  if (pedido.status === 'entregue') {
+    badge.textContent = 'Entregue';
+    badge.className   = 'badge badge-entregue';
+  } else if (pedido.status === 'concluido') {
+    badge.textContent = 'Pronto para retirada';
+    badge.className   = 'badge badge-concluido';
+  } else {
+    badge.textContent = 'Em produção';
+    badge.className   = 'badge badge-producao';
+  }
 }
 
 function renderInfos(pedido) {
@@ -195,11 +204,20 @@ function renderProdutoNovo(p) {
 function renderEtapaCard(pedido) {
   const card = document.getElementById('etapa-card');
 
+  if (pedido.status === 'entregue') {
+    card.innerHTML = `
+      <div class="card-title">Status do pedido</div>
+      <div class="etapa-atual-nome etapa-concluida">✓ Entregue</div>
+      <div class="etapa-numero">Entregue em ${pedido.entregueEm || '—'}</div>`;
+    return;
+  }
+
   if (pedido.status === 'concluido') {
     card.innerHTML = `
       <div class="card-title">Status do pedido</div>
-      <div class="etapa-atual-nome etapa-concluida">✓ Concluído</div>
-      <div class="etapa-numero">Todas as etapas finalizadas</div>`;
+      <div class="etapa-atual-nome etapa-concluida">✓ Pronto para retirada</div>
+      <div class="etapa-numero">Todas as etapas de produção finalizadas</div>
+      <button class="btn-entregar" id="btn-entregar-pedido">Marcar como entregue</button>`;
     return;
   }
 
@@ -225,6 +243,24 @@ function iniciarExcluirPedido(pedido) {
 
   document.getElementById('btn-editar-pedido').addEventListener('click', () => {
     window.location.href = `editar-pedido.html?id=${pedido.id}`;
+  });
+}
+
+function iniciarBotaoEntregar(pedido) {
+  const btn = document.getElementById('btn-entregar-pedido');
+  if (!btn) return;
+  btn.addEventListener('click', async () => {
+    if (!confirm(`Marcar o pedido #${pedido.id} como entregue?\n\nEle sairá da lista ativa do dashboard.`)) return;
+    btn.disabled    = true;
+    btn.textContent = 'Salvando...';
+    try {
+      await entregarPedido(pedido.id);
+      await carregarPedido(pedido.id);
+    } catch {
+      alert('Erro ao marcar como entregue.');
+      btn.disabled    = false;
+      btn.textContent = 'Marcar como entregue';
+    }
   });
 }
 

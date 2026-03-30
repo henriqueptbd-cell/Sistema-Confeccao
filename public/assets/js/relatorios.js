@@ -4,10 +4,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  const pedidos = await listarPedidos();
-  const hoje    = new Date();
-  const mes     = hoje.getMonth() + 1;
-  const ano     = hoje.getFullYear();
+  const [pedidos, compras] = await Promise.all([
+    listarPedidos(),
+    listarCompras(null, null).catch(() => []),
+  ]);
+  const hoje = new Date();
+  const mes  = hoje.getMonth() + 1;
+  const ano  = hoje.getFullYear();
 
   const nomeMes = hoje.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
   document.getElementById('periodo-label').textContent = 'Referência: ' + nomeMes;
@@ -15,30 +18,30 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderResumo(pedidos, mes, ano);
   renderGargalo(pedidos);
   renderRanking(pedidos);
+  renderMateriais(compras, mes, ano);
   renderPrazos(pedidos);
 });
 
 function renderResumo(pedidos, mes, ano) {
-  const emProducao = pedidos.filter(p => p.status !== 'concluido');
-  const atrasados  = pedidos.filter(isAtrasado);
+  const emProducao = pedidos.filter(p => p.status !== 'concluido' && p.status !== 'entregue');
+  const atrasados  = pedidos.filter(p => p.status !== 'entregue' && isAtrasado(p));
 
-  const concluidosNoMes = pedidos.filter(p => {
-    const d = p.etapas?.find(e => e.ordem === 9)?.concluidaEm;
-    if (!d) return false;
-    const partes = d.split('/');
-    return parseInt(partes[1]) === mes && parseInt(partes[2]) === ano;
+  const entreguesNoMes = pedidos.filter(p => {
+    if (p.status !== 'entregue' || !p.entregueEmISO) return false;
+    const [a, m] = p.entregueEmISO.split('-');
+    return parseInt(m) === mes && parseInt(a) === ano;
   });
 
-  const faturamentoMes = concluidosNoMes.reduce((s, p) => s + totalPedido(p), 0);
+  const faturamentoMes = entreguesNoMes.reduce((s, p) => s + totalPedido(p), 0);
 
   document.getElementById('stat-producao').textContent    = emProducao.length;
-  document.getElementById('stat-concluidos').textContent  = concluidosNoMes.length;
+  document.getElementById('stat-concluidos').textContent  = entreguesNoMes.length;
   document.getElementById('stat-faturamento').textContent = formatarMoeda(faturamentoMes);
   document.getElementById('stat-atrasados').textContent   = atrasados.length;
 }
 
 function renderGargalo(pedidos) {
-  const emProducao = pedidos.filter(p => p.status !== 'concluido');
+  const emProducao = pedidos.filter(p => p.status !== 'concluido' && p.status !== 'entregue');
   const contEtapa  = {};
 
   emProducao.forEach(p => {
@@ -98,9 +101,71 @@ function renderRanking(pedidos) {
     </div>`).join('');
 }
 
+function renderMateriais(compras, mes, ano) {
+  const doMes = compras.filter(c => {
+    if (c.tipo !== 'Material' || !c.dataISO) return false;
+    const [a, m] = c.dataISO.split('-');
+    return parseInt(m) === mes && parseInt(a) === ano;
+  });
+
+  const custosPorMat = {};
+  const qtdPorMat    = {};
+
+  doMes.forEach(c => {
+    const mat = c.material || '—';
+    custosPorMat[mat] = (custosPorMat[mat] || 0) + (c.valorTotal || 0);
+    if (c.quantidade && c.unidade) {
+      if (!qtdPorMat[mat]) qtdPorMat[mat] = {};
+      qtdPorMat[mat][c.unidade] = (qtdPorMat[mat][c.unidade] || 0) + c.quantidade;
+    }
+  });
+
+  const custoEl = document.getElementById('materiais-custo-container');
+  const qtdEl   = document.getElementById('materiais-qtd-container');
+
+  if (!Object.keys(custosPorMat).length) {
+    const vazio = '<div style="font-size:13px;color:var(--gray)">Nenhum material comprado neste mês.</div>';
+    custoEl.innerHTML = vazio;
+    qtdEl.innerHTML   = vazio;
+    return;
+  }
+
+  const maxCusto = Math.max(...Object.values(custosPorMat));
+  custoEl.innerHTML = Object.entries(custosPorMat)
+    .sort((a, b) => b[1] - a[1])
+    .map(([mat, valor]) => {
+      const pct = Math.round((valor / maxCusto) * 100);
+      return `
+        <div class="gargalo-row">
+          <span class="gargalo-nome">${mat}</span>
+          <div class="gargalo-bar-wrap">
+            <div class="gargalo-bar-fill" style="width:${pct}%;background:var(--accent2)"></div>
+          </div>
+          <span class="gargalo-count" style="width:80px">${formatarMoeda(valor)}</span>
+        </div>`;
+    }).join('');
+
+  qtdEl.innerHTML = Object.entries(qtdPorMat)
+    .sort((a, b) => {
+      const totalA = Object.values(a[1]).reduce((s, v) => s + v, 0);
+      const totalB = Object.values(b[1]).reduce((s, v) => s + v, 0);
+      return totalB - totalA;
+    })
+    .map(([mat, unidades]) => {
+      const linhas = Object.entries(unidades)
+        .map(([un, qtd]) => `${qtd} ${un}`)
+        .join(', ');
+      return `
+        <div class="ranking-row">
+          <span class="ranking-nome">${mat}</span>
+          <span class="ranking-qtd">${linhas}</span>
+        </div>`;
+    }).join('');
+}
+
 function renderPrazos(pedidos) {
   const emProducao = pedidos
-    .filter(p => p.status !== 'concluido')
+    .filter(p => p.status !== 'concluido' && p.status !== 'entregue')
     .sort((a, b) => {
       if (!a.prazoISO) return 1;
       if (!b.prazoISO) return -1;

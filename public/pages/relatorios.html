@@ -30,8 +30,8 @@
       <a href="relatorios.html" class="nav-item active">
         <span class="nav-icon">📊</span> Relatórios
       </a>
-      <a href="configuracoes.html" class="nav-item" id="nav-config" hidden>
-        <span class="nav-icon">⚙️</span> Configurações
+      <a href="financeiro.html" class="nav-item" id="nav-config" hidden>
+        <span class="nav-icon">💰</span> Financeiro
       </a>
       <div class="sidebar-bottom">
         <a href="index.html" class="nav-item">
@@ -47,6 +47,7 @@
           <div class="page-title">Relatórios</div>
           <div class="page-sub" id="periodo-label"></div>
         </div>
+        <button class="btn-imprimir" onclick="window.print()">🖨 Imprimir</button>
       </div>
 
       <!-- Resumo do mês -->
@@ -84,6 +85,24 @@
           <div class="rel-card">
             <div class="rel-card-title">Produtos mais pedidos</div>
             <div id="ranking-container"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Gastos por material -->
+      <div class="rel-section" id="section-materiais">
+        <div class="rel-section-title">Gastos por material — mês atual</div>
+        <div class="rel-two-col">
+
+          <div class="rel-card">
+            <div class="rel-card-title">Custo por tipo de material (R$)</div>
+            <div id="materiais-custo-container"></div>
+          </div>
+
+          <div class="rel-card">
+            <div class="rel-card-title">Quantidade comprada por material</div>
+            <div id="materiais-qtd-container"></div>
           </div>
 
         </div>

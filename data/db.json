@@ -1,8 +1,58 @@
 {
   "meta": {
     "proximoId": 1014,
-    "proximoClienteId": 3
+    "proximoClienteId": 3,
+    "proximoFuncionarioId": 2,
+    "proximoCompraId": 3,
+    "proximoUsuarioId": 3
   },
+  "categoriasDespesa": [
+    "Energia",
+    "Aluguel",
+    "Frete",
+    "Transporte",
+    "Manutenção"
+  ],
+  "funcionarios": [
+    {
+      "id": 1,
+      "criadoEm": "29/03/2026",
+      "ativo": true,
+      "nome": "sara",
+      "cargo": "costureira",
+      "telefone": "1231231231231",
+      "salarioBase": 3000,
+      "dataAdmissao": "2026-03-17"
+    }
+  ],
+  "compras": [
+    {
+      "id": 2,
+      "criadoEm": "29/03/2026",
+      "dataISO": "2026-03-30",
+      "data": "30/03/2026",
+      "tipo": "Energia",
+      "fornecedor": "luz",
+      "material": null,
+      "quantidade": null,
+      "unidade": null,
+      "valorTotal": 100,
+      "observacoes": null
+    },
+    {
+      "id": 1,
+      "criadoEm": "29/03/2026",
+      "dataISO": "2026-03-30",
+      "data": "30/03/2026",
+      "tipo": "Material",
+      "fornecedor": "ze do tecido",
+      "material": "dry",
+      "quantidade": 2,
+      "unidade": "metros",
+      "valorTotal": 100,
+      "observacoes": null
+    }
+  ],
   "pedidos": [
     {
       "id": 1013,
@@ -913,6 +963,13 @@
       "email": "admin@fcamargo.com",
       "senha": "admin123",
       "role": "admin"
+    },
+    {
+      "id": 2,
+      "nome": "Funcionário Teste",
+      "email": "funcionario@fcamargo.com",
+      "senha": "func123",
+      "role": "funcionario"
     }
   ],
   "configPrecos": {

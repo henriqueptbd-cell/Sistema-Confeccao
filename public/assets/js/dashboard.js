@@ -23,7 +23,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function carregarPedidos() {
   try {
-    pedidosCache = await listarPedidos();
+    const todos = await listarPedidos();
+    // Pedidos entregues saem do painel ativo
+    pedidosCache = todos.filter(p => p.status !== 'entregue');
     renderStats(pedidosCache);
     renderTabela(pedidosCache, filtroAtual);
   } catch (e) {

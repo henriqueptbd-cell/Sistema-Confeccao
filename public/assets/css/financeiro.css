@@ -1,0 +1,245 @@
+/* ========================================
+   FCamargo — Financeiro
+   ======================================== */
+
+/* Abas */
+.fin-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 0;
+}
+
+.fin-tab {
+  padding: 10px 20px;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.fin-tab:hover { color: var(--text); }
+
+.fin-tab.active {
+  color: var(--accent4);
+  border-bottom-color: var(--accent4);
+  font-weight: 600;
+}
+
+/* Painel header */
+.fin-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.fin-count {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Tabelas full width */
+.fin-table-full { width: 100%; }
+.fin-table-full th, .fin-table-full td { padding: 10px 12px; }
+
+.fin-acoes { display: flex; gap: 8px; }
+
+/* Linha inativo */
+.fin-row-inativo td { opacity: 0.55; }
+
+/* Badges status */
+.fin-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.fin-badge-ativo   { background: #eafaf1; color: var(--accent3); }
+.fin-badge-inativo { background: #f4f4f4; color: var(--text-muted); }
+
+/* Filtro compras */
+.compras-filtro { display: flex; gap: 8px; }
+.fin-select { width: auto; min-width: 120px; }
+
+/* Total compras */
+.compras-total-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-top: 2px solid var(--border);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text);
+}
+
+/* Modal financeiro */
+.fin-modal {
+  width: 560px;
+  max-width: 95vw;
+}
+
+.fin-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.fin-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.fin-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fin-form-group-check {
+  justify-content: flex-end;
+}
+
+.fin-form-row-inner {
+  display: flex;
+  gap: 10px;
+}
+.fin-form-row-inner > div { flex: 1; }
+
+/* Modal box (white background) */
+.modal {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 32px 36px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 20px;
+  color: var(--dark);
+  margin-bottom: 4px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+/* Header com dois botões (Compras) */
+.fin-header-acoes {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn-secundario {
+  padding: 9px 18px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--white);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-secundario:hover { background: #f5f5f5; }
+
+/* Categorias */
+.fin-cat-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.fin-cat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: #f7f7f7;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.fin-cat-remove {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0 4px;
+  border-radius: 4px;
+  transition: color 0.15s;
+}
+.fin-cat-remove:hover { color: var(--accent1); }
+
+/* Acessos — badges de perfil */
+.fin-badge-admin { background: #ede9fe; color: #5b21b6; }
+.fin-badge-func  { background: #e0f2fe; color: #0369a1; }
+
+/* Caixa de informação (roles) */
+.fin-info-box {
+  margin-top: 20px;
+  padding: 16px 20px;
+  background: #f8f8f8;
+  border-radius: 12px;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.8;
+}
+
+.fin-info-box strong { color: var(--text); }
+
+/* Erro inline no modal usuário */
+.cfg-msg.erro {
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  background: #fee2e2;
+  color: #b91c1c;
+  margin: 0 0 4px;
+}
+
+/* Toggle ativo */
+.fin-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 8px 0;
+}
+
+.fin-toggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--accent3);
+}
+
+.fin-toggle-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+}

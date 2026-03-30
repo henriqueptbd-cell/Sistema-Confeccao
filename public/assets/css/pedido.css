@@ -114,6 +114,23 @@
 
 .badge-producao  { background: #fff3cd; color: #856404; }
 .badge-concluido { background: #d4f4e3; color: #1e6b3e; }
+.badge-entregue  { background: #dbeafe; color: #1d4ed8; }
+
+.btn-entregar {
+  margin-top: 16px;
+  width: 100%;
+  padding: 12px;
+  background: var(--accent3);
+  color: var(--white);
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-entregar:hover    { background: #1a7a40; }
+.btn-entregar:disabled { opacity: 0.6; cursor: not-allowed; }
 
 /* ---- Grid de conteúdo ---- */
 .grid { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }

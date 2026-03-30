@@ -92,6 +92,22 @@ router.put('/:id', (req, res) => {
   res.json(pedido);
 });
 
+router.patch('/:id/entregar', (req, res) => {
+  const id = parseInt(req.params.id);
+  const db = lerDb();
+  const pedido = db.pedidos.find(p => p.id === id);
+
+  if (!pedido) return res.status(404).json({ mensagem: 'Pedido não encontrado.' });
+  if (pedido.status !== 'concluido') return res.status(400).json({ mensagem: 'Pedido ainda não está concluído.' });
+
+  pedido.status    = 'entregue';
+  pedido.entregueEm = new Date().toLocaleDateString('pt-BR');
+  pedido.entregueEmISO = new Date().toISOString().slice(0, 10);
+
+  salvarDb(db);
+  res.json(pedido);
+});
+
 router.delete('/:id', (req, res) => {
   const id = parseInt(req.params.id);
   const db = lerDb();

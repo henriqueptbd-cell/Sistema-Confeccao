@@ -14,10 +14,13 @@ app.use(express.static(path.join(publicPath, 'assets')));
 app.use(express.static(path.join(publicPath, 'pages')));
 app.use(express.static(publicPath));
 
-app.use('/api/auth',     require('./routes/auth'));
-app.use('/api/pedidos', require('./routes/pedidos'));
-app.use('/api/clientes', require('./routes/clientes'));
-app.use('/api/config',  require('./routes/config'));
+app.use('/api/auth',         require('./routes/auth'));
+app.use('/api/pedidos',     require('./routes/pedidos'));
+app.use('/api/clientes',    require('./routes/clientes'));
+app.use('/api/config',      require('./routes/config'));
+app.use('/api/funcionarios', require('./routes/funcionarios'));
+app.use('/api/compras',     require('./routes/compras'));
+app.use('/api/usuarios',    require('./routes/usuarios'));
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(publicPath, 'pages', 'index.html'));

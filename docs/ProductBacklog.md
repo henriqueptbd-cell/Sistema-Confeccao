@@ -16,6 +16,8 @@
 | EP04 | Consulta Pública de Pedidos |
 | EP05 | Painel do Administrador |
 | EP06 | Painel da Funcionária de Produção |
+| EP07 | Módulo Financeiro |
+| EP08 | Relatórios |
 
 ---
 
@@ -28,8 +30,13 @@
 **para que** eu possa vinculá-lo a um pedido.
 
 **Critérios de aceitação:**
-- [ ] O formulário deve conter: nome, telefone e observações opcionais
-- [ ] O telefone deve ser único no sistema (sem duplicatas)
+- [ ] O formulário deve suportar **Pessoa Física** e **Pessoa Jurídica** — os campos mudam conforme o tipo selecionado
+- [ ] Pessoa Física: nome completo, CPF, telefone, email (opcional), endereço completo
+- [ ] Pessoa Jurídica: razão social, nome fantasia (opcional), CNPJ, inscrição estadual (opcional), telefone, email (opcional), endereço completo
+- [ ] CPF e CNPJ devem ser validados antes de salvar
+- [ ] O CEP deve preencher automaticamente logradouro, bairro, município e UF via ViaCEP
+- [ ] O formulário deve ser um componente reutilizável (`<ModalNovoCliente />`) acionável de qualquer tela via callback `onSalvar(cliente)`
+- [ ] Na tela de pedido, ao salvar via modal, o cliente já fica selecionado automaticamente no pedido
 - [ ] O sistema deve confirmar o cadastro com uma mensagem de sucesso
 - [ ] O cliente cadastrado deve aparecer na listagem de clientes
 
@@ -70,11 +77,11 @@
 **para que** o fluxo de produção seja iniciado corretamente.
 
 **Critérios de aceitação:**
-- [ ] O pedido deve estar obrigatoriamente vinculado a um cliente
-- [ ] O sistema deve gerar automaticamente um código único para o pedido (ex: PED-1023)
+- [ ] O pedido deve estar obrigatoriamente vinculado a um cliente (busca em tempo real; se não encontrado, abre modal de cadastro)
+- [ ] O sistema deve gerar automaticamente um número sequencial único para consulta pública
 - [ ] O formulário deve permitir adicionar múltiplas peças ao pedido
-- [ ] Cada peça deve conter: modelo da estampa, tipo de manga, tamanho, nome personalizado e valor unitário
 - [ ] O pedido deve registrar a data de entrada e a previsão de entrega
+- [ ] O valor total do pedido deve ser calculado automaticamente com base nas peças
 - [ ] O sistema deve confirmar o registro com uma mensagem de sucesso
 
 ---
@@ -86,10 +93,17 @@
 **para que** pedidos variados sejam registrados corretamente.
 
 **Critérios de aceitação:**
-- [ ] Deve ser possível adicionar múltiplas peças em um único pedido
-- [ ] Cada peça deve ter: modelo, tipo de manga, tamanho, nome personalizado e valor unitário
-- [ ] O sistema deve exibir o resumo das peças adicionadas antes de confirmar o pedido
-- [ ] Deve ser possível remover ou editar uma peça antes da confirmação
+- [ ] Deve ser possível adicionar múltiplas peças em um único pedido; botão "Adicionar mais peças" fica no final da lista
+- [ ] Tipos de produto suportados: **Camiseta**, **Short**, **Corta-vento**, **Bandeira**
+- [ ] **Camiseta:** material (Dry / Confort UV50 / Crepe / PV), manga (curta / longa / regata), gola, punho (só manga longa), dedão (só manga longa), capuz/balaclava (só manga longa, mutuamente exclusivos)
+- [ ] **Short:** modelo (Jet masc. / Jet fem. / Futebol), bolso com zíper (sim/não)
+- [ ] **Corta-vento:** com toca ou sem toca
+- [ ] **Bandeira:** dimensões em campo livre (máx. 90×70cm), 1 ou 2 faces, campo de observações
+- [ ] Tamanhos selecionáveis por grupo: Adulto masc. (P–EXG), Adulto fem./Babylook (BLP–BLXG), Infantil (2–16); Corta-vento sem versão feminina
+- [ ] Estampa: Personalizado (campo de texto livre) / Olívia (campo de cor) / Amaury (campo de cor); novos modelos cadastráveis pelo admin
+- [ ] Campo para anexar imagens de referência (uma ou mais)
+- [ ] O valor da peça deve ser calculado automaticamente com base na precificação configurada
+- [ ] Deve ser possível remover ou editar uma peça antes de salvar o pedido
 
 ---
 
@@ -281,6 +295,127 @@
 
 ---
 
+---
+
+## EP07 — Módulo Financeiro
+
+### US19 — Precificação dinâmica na tela de pedido
+
+**Como** administrador,
+**quero** que o valor de cada peça seja calculado automaticamente conforme as opções são selecionadas,
+**para que** eu não precise calcular manualmente e cometa menos erros.
+
+**Critérios de aceitação:**
+- [ ] O valor é calculado com a fórmula: `(preço base + adicionais) × (1 − desconto%)`
+- [ ] O valor é atualizado em tempo real conforme as opções são selecionadas
+- [ ] Exibe subtotal antes do desconto e valor final após o desconto
+- [ ] Campo de percentual de desconto visível no formulário da peça
+- [ ] Se o desconto exceder o limite configurado, o sistema bloqueia e exibe aviso
+
+---
+
+### US20 — Painel de configuração de preços
+
+**Como** administrador,
+**quero** configurar os preços base e adicionais de cada produto,
+**para que** o sistema calcule os valores corretamente sem precisar alterar o código.
+
+**Critérios de aceitação:**
+- [ ] Tela dedicada de configurações exibe tabela com todos os preços base por produto/variação
+- [ ] Tela exibe tabela com todos os adicionais e seus valores
+- [ ] Campo para configurar o limite máximo de desconto permitido (global, em %)
+- [ ] Alterações afetam apenas novos pedidos — pedidos já criados mantêm o valor registrado
+- [ ] Acesso restrito ao Administrador
+
+---
+
+### US21 — Registrar compras de material
+
+**Como** administrador,
+**quero** registrar cada compra de material realizada,
+**para que** eu tenha controle dos custos com insumos.
+
+**Critérios de aceitação:**
+- [ ] Formulário com: data, material, quantidade, unidade, valor total, fornecedor (opcional), observações (opcional)
+- [ ] Listagem de compras filtráveis por período
+- [ ] Qualquer compra pode ser editada ou excluída pelo administrador
+
+---
+
+### US22 — Registrar salários mensais
+
+**Como** administrador,
+**quero** registrar o salário mensal de cada funcionária,
+**para que** os custos com pessoal entrem no resultado financeiro.
+
+**Critérios de aceitação:**
+- [ ] Formulário com: funcionária, mês/ano de referência, valor, observações (opcional)
+- [ ] Um registro por funcionária por mês (sem duplicatas)
+- [ ] Editável pelo administrador
+
+---
+
+## EP08 — Relatórios
+
+### US23 — Visualizar relatório financeiro por período
+
+**Como** administrador,
+**quero** consultar o desempenho financeiro da confecção em qualquer intervalo de datas,
+**para que** eu entenda a saúde financeira da empresa com flexibilidade.
+
+**Critérios de aceitação:**
+- [ ] Seletor de período com data início + data fim (padrão: 1º do mês atual até hoje)
+- [ ] Atalhos rápidos: Esta semana, Este mês, Mês anterior, Últimos 30 dias
+- [ ] Todos os blocos reagem ao mesmo intervalo simultaneamente
+
+---
+
+### US24 — Navegar entre visões de relatório (presets)
+
+**Como** administrador,
+**quero** alternar rapidamente entre visões predefinidas do relatório,
+**para que** eu acesse a informação que preciso sem configurar manualmente.
+
+**Critérios de aceitação:**
+- [ ] Preset **Consolidado**: Vendas (Recebidos) + Compras + Salários
+- [ ] Preset **Vendas**: apenas bloco de Vendas com subcategorias A Receber / Entregues / Recebidos
+- [ ] Preset **Compras**: apenas bloco de Compras de Materiais
+- [ ] Preset **Salários**: apenas bloco de Salários
+- [ ] Preset **Personalizado**: escolha livre de blocos e subcategorias de vendas
+- [ ] Resumo Consolidado exibido quando 2 ou mais blocos estão ativos
+
+---
+
+### US25 — Visualizar subcategorias de vendas
+
+**Como** administrador,
+**quero** ver as vendas divididas em A Receber, Entregues e Recebidos,
+**para que** eu entenda o fluxo de caixa real e projetado.
+
+**Critérios de aceitação:**
+- [ ] **A Receber**: pedidos fechados com `pagamento_status = 'pendente'`
+- [ ] **Entregues**: pedidos com `entrega_status = 'entregue'`
+- [ ] **Recebidos**: pedidos com `pagamento_status = 'confirmado'`
+- [ ] Subcategorias não são mutuamente exclusivas (pedido pode estar Entregue e A Receber)
+- [ ] Resultado Real usa apenas Recebidos; Resultado Previsto inclui A Receber
+- [ ] Administrador pode confirmar pagamento e entrega diretamente no sistema
+
+---
+
+### US26 — Imprimir relatório
+
+**Como** administrador,
+**quero** imprimir qualquer visão do relatório com formatação profissional,
+**para que** eu possa arquivar ou compartilhar o resultado em papel.
+
+**Critérios de aceitação:**
+- [ ] Botão "Imprimir" disponível na tela de Relatórios
+- [ ] Cabeçalho gerado automaticamente com nome da empresa, título e período
+- [ ] Elementos de navegação (sidebar, topbar, botões, filtros) ocultados na impressão via `@media print`
+- [ ] Hook `usePrint()` reutilizável em qualquer tela do sistema
+
+---
+
 ## Itens Fora do Escopo Inicial
 
 Os itens abaixo foram identificados mas não fazem parte do escopo da primeira versão do sistema:
@@ -299,11 +434,11 @@ Os itens abaixo foram identificados mas não fazem parte do escopo da primeira v
 
 | ID | User Story | Épico | Prioridade |
 |----|-----------|-------|------------|
-| US01 | Cadastrar cliente | EP01 | Alta |
+| US01 | Cadastrar cliente (PF/PJ, CEP auto, modal reutilizável) | EP01 | Alta |
 | US02 | Buscar cliente existente | EP01 | Alta |
 | US03 | Editar dados do cliente | EP01 | Média |
 | US04 | Registrar novo pedido | EP02 | Alta |
-| US05 | Adicionar peças ao pedido | EP02 | Alta |
+| US05 | Adicionar peças ao pedido (catálogo completo) | EP02 | Alta |
 | US06 | Visualizar lista de pedidos | EP02 | Alta |
 | US07 | Visualizar detalhes de um pedido | EP02 | Alta |
 | US08 | Registrar previsão de entrega | EP02 | Alta |
@@ -317,3 +452,11 @@ Os itens abaixo foram identificados mas não fazem parte do escopo da primeira v
 | US16 | Acessar painel administrativo com login | EP05 | Alta |
 | US17 | Visualizar resumo geral no painel | EP05 | Média |
 | US18 | Acessar painel de produção com login | EP06 | Alta |
+| US19 | Precificação dinâmica na tela de pedido | EP07 | Alta |
+| US20 | Painel de configuração de preços | EP07 | Média |
+| US21 | Registrar compras de material | EP07 | Média |
+| US22 | Registrar salários mensais | EP07 | Média |
+| US23 | Visualizar relatório financeiro por período | EP08 | Média |
+| US24 | Navegar entre visões de relatório (presets) | EP08 | Média |
+| US25 | Visualizar subcategorias de vendas | EP08 | Média |
+| US26 | Imprimir relatório | EP08 | Baixa |

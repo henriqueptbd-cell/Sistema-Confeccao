@@ -23,8 +23,8 @@ A empresa controlava seus pedidos de forma manual, com cadernos e pastas física
 |--------|-----------|
 | Servidor | Node.js + Express |
 | Frontend | HTML5 + CSS3 + JavaScript (Vanilla) |
-| Dados | Mock em JS — pronto para migrar para banco de dados |
-| Deploy | Vercel |
+| Dados | Mock em JS — pronto para migrar para banco de dados (PostgreSQL) |
+| Deploy | Render |
 
 ---
 
@@ -148,24 +148,40 @@ A pasta `/docs` contém os artefatos do processo de desenvolvimento:
 |---------|----------|
 | `VisaoDoProduto.md` | Problema, objetivo e público-alvo do sistema |
 | `LevantamentoRequisitos.md` | Requisitos funcionais e não funcionais |
-| `ProductBacklog.md` | Épicos e histórias de usuário (Scrum) |
+| `ProductBacklog.md` | Épicos e histórias de usuário — EP01 a EP08 (Scrum) |
+| `CatalogoProdutos.md` | Catálogo completo de produtos: camiseta, short, corta-vento, bandeira |
+| `CadastroClientes.md` | Especificação do cadastro de clientes (PF/PJ, CEP, busca, modal) |
+| `Financeiro.md` | Módulo financeiro: precificação, compras de material, salários |
+| `bancoDeDados.md` | Schema v1 do banco de dados (PostgreSQL) |
+| `Banco de dados V2 path.md` | Patch v2: campos de pagamento e entrega na tabela pedidos |
+| `relatorios.md` | Especificação do módulo de relatórios financeiros |
+| `Relatórios Mockup.md` | Mockup React funcional do módulo de relatórios |
 | `Class Diagram.png` | Diagrama de classes do sistema |
-| `Modelagem do banco de dados.xml` | Modelagem do banco de dados |
 
 ---
 
 ## Status
 
+**Documentação**
 - [x] Visão do produto e levantamento de requisitos
-- [x] Product Backlog (Scrum)
-- [x] Modelagem do banco de dados
+- [x] Product Backlog (Scrum) — EP01 a EP08
+- [x] Catálogo de produtos (camiseta, short, corta-vento, bandeira)
+- [x] Especificação de cadastro de clientes (PF/PJ)
+- [x] Modelagem do banco de dados v1 (PostgreSQL)
+- [x] Patch banco de dados v2 (pagamento e entrega)
+- [x] Módulo financeiro (precificação, compras, salários)
+- [x] Módulo de relatórios (especificação + mockup React)
 - [x] Diagrama de classes
+
+**Implementação**
 - [x] Protótipo funcional (frontend completo com dados mock)
-- [x] Configuração de deploy (Vercel)
-- [ ] Banco de dados (PostgreSQL)
+- [x] Deploy no Render
+- [ ] Banco de dados (PostgreSQL — Supabase previsto)
 - [ ] Autenticação real (JWT ou sessão)
 - [ ] API REST (CRUD de pedidos, clientes, etapas)
 - [ ] Integração frontend ↔ API
+- [ ] Módulo Financeiro (precificação dinâmica, config de preços, compras, salários)
+- [ ] Módulo de Relatórios
 
 ---
 

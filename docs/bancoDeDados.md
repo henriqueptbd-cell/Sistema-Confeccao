@@ -1,8 +1,11 @@
-# Modelagem de Banco de Dados
+# Modelagem de Banco de Dados — Schema v1
 
 > Banco de dados: **PostgreSQL**  
 > Ambiente de desenvolvimento: gerado localmente via script JS  
 > Ambiente de produção: a definir (Supabase previsto)
+
+> ⚠️ **Este documento descreve o schema v1.** Para os campos adicionados na v2 (pagamento e entrega na tabela `pedidos`), consulte [`Banco de dados V2 path.md`](./Banco%20de%20dados%20V2%20path.md).  
+> Para as tabelas do módulo Financeiro (precificação, compras, salários), consulte [`Financeiro.md`](./Financeiro.md).
 
 ---
 

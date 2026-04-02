@@ -19,11 +19,16 @@
   },
   "scripts": {
     "start": "node ./src/server.js",
-    "dev": "node --watch ./src/server.js"
+    "dev": "concurrently \"node --watch ./src/server.js\" \"npm run dev --prefix client\"",
+    "dev:server": "node --watch ./src/server.js",
+    "dev:client": "npm run dev --prefix client"
   },
   "dependencies": {
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "pg": "^8.20.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
   }
 }

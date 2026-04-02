@@ -1,26 +1,30 @@
 const express = require('express');
+const router  = express.Router();
+const pool    = require('../db');
 
-const router = express.Router();
-const { lerDb } = require('../db');
-
-// TODO(segurança): substituir comparação de senha por bcrypt.compare()
-// TODO(segurança): emitir JWT com expiração em vez de sessionStorage no cliente
-// TODO(segurança): aplicar rate limiting (ex: express-rate-limit) nesta rota
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
   const { email, senha } = req.body;
 
   if (!email || !senha) {
     return res.status(400).json({ ok: false, mensagem: 'E-mail e senha são obrigatórios.' });
   }
 
-  const db = lerDb();
-  const usuario = db.usuarios.find(u => u.email === email && u.senha === senha);
+  try {
+    const { rows } = await pool.query(
+      'SELECT * FROM usuarios WHERE email = $1 AND senha = $2',
+      [email, senha]
+    );
 
-  if (!usuario) {
-    return res.status(401).json({ ok: false, mensagem: 'Credenciais inválidas.' });
+    if (rows.length === 0) {
+      return res.status(401).json({ ok: false, mensagem: 'Credenciais inválidas.' });
+    }
+
+    const u = rows[0];
+    res.json({ ok: true, usuario: { id: u.id, nome: u.nome, email: u.email, role: u.role } });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ ok: false, mensagem: 'Erro interno.' });
   }
-
-  res.json({ ok: true, usuario: { id: usuario.id, nome: usuario.nome, email: usuario.email, role: usuario.role || 'user' } });
 });
 
 module.exports = router;

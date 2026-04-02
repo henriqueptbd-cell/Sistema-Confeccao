@@ -1,18 +1,12 @@
 const express = require('express');
-const dotenv = require('dotenv');
-const path = require('path');
+const dotenv  = require('dotenv');
 
-dotenv.config({ quiet: true, path: path.resolve(__dirname, '../.env') });
+dotenv.config({ quiet: true });
 
 const app = express();
 const PORT = process.env.PORT || 3004;
 
-const publicPath = path.resolve(__dirname, '../public');
-
 app.use(express.json());
-app.use(express.static(path.join(publicPath, 'assets')));
-app.use(express.static(path.join(publicPath, 'pages')));
-app.use(express.static(publicPath));
 
 app.use('/api/auth',         require('./routes/auth'));
 app.use('/api/pedidos',     require('./routes/pedidos'));
@@ -21,10 +15,6 @@ app.use('/api/config',      require('./routes/config'));
 app.use('/api/funcionarios', require('./routes/funcionarios'));
 app.use('/api/compras',     require('./routes/compras'));
 app.use('/api/usuarios',    require('./routes/usuarios'));
-
-app.get('/', (req, res) => {
-  res.sendFile(path.join(publicPath, 'pages', 'index.html'));
-});
 
 if (require.main === module) {
   app.listen(PORT, () => {

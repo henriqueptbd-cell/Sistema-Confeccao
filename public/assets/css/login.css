@@ -2,13 +2,6 @@
    FCamargo — Login
    ======================================== */
 
-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
 .login-box {
   width: 100%;
   max-width: 420px;

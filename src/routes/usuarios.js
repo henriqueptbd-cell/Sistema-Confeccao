@@ -1,94 +1,62 @@
 const express = require('express');
+const router  = express.Router();
+const pool    = require('../db');
 
-const router = express.Router();
-const { lerDb, salvarDb } = require('../db');
-
-// Lista todos os usuários (sem expor senha)
-router.get('/', (req, res) => {
-  const db = lerDb();
-  const lista = (db.usuarios || []).map(({ senha, ...u }) => u);
-  res.json(lista);
-});
-
-// Cria novo usuário
-router.post('/', (req, res) => {
-  const db = lerDb();
-  if (!db.meta.proximoUsuarioId) db.meta.proximoUsuarioId = db.usuarios.length + 1;
-
-  const { nome, email, senha, role } = req.body;
-  if (!nome || !email || !senha) {
-    return res.status(400).json({ mensagem: 'Nome, email e senha são obrigatórios.' });
+router.get('/', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT id, nome, email, role FROM usuarios ORDER BY id');
+    res.json(rows);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ mensagem: 'Erro interno.' });
   }
-
-  const existe = (db.usuarios || []).find(u => u.email === email);
-  if (existe) {
-    return res.status(409).json({ mensagem: 'Este e-mail já está cadastrado.' });
-  }
-
-  const novo = {
-    id: db.meta.proximoUsuarioId++,
-    nome,
-    email,
-    senha,
-    role: role || 'funcionario',
-  };
-
-  db.usuarios.push(novo);
-  salvarDb(db);
-  const { senha: _, ...semSenha } = novo;
-  res.status(201).json(semSenha);
 });
 
-// Revela senha de um usuário (uso exclusivo do admin)
-router.get('/:id/senha', (req, res) => {
-  const id = parseInt(req.params.id);
-  const db = lerDb();
-  const u  = (db.usuarios || []).find(u => u.id === id);
-  if (!u) return res.status(404).json({ mensagem: 'Usuário não encontrado.' });
-  res.json({ senha: u.senha });
-});
-
-// Atualiza usuário
-router.put('/:id', (req, res) => {
-  const id  = parseInt(req.params.id);
-  const db  = lerDb();
-  const idx = (db.usuarios || []).findIndex(u => u.id === id);
-  if (idx === -1) return res.status(404).json({ mensagem: 'Usuário não encontrado.' });
-
+router.post('/', async (req, res) => {
   const { nome, email, senha, role } = req.body;
-  if (nome)  db.usuarios[idx].nome  = nome;
-  if (email) db.usuarios[idx].email = email;
-  if (senha) db.usuarios[idx].senha = senha;
-  if (role)  db.usuarios[idx].role  = role;
-
-  salvarDb(db);
-  const { senha: _, ...semSenha } = db.usuarios[idx];
-  res.json(semSenha);
+  try {
+    const { rows } = await pool.query(
+      'INSERT INTO usuarios (nome, email, senha, role) VALUES ($1, $2, $3, $4) RETURNING id, nome, email, role',
+      [nome, email, senha, role || 'funcionaria_producao']
+    );
+    res.status(201).json(rows[0]);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ mensagem: 'Erro interno.' });
+  }
 });
 
-// Exclui usuário
-router.delete('/:id', (req, res) => {
+router.put('/:id', async (req, res) => {
   const id = parseInt(req.params.id);
-  const db = lerDb();
-  const idx = (db.usuarios || []).findIndex(u => u.id === id);
-  if (idx === -1) return res.status(404).json({ mensagem: 'Usuário não encontrado.' });
-
-  db.usuarios.splice(idx, 1);
-  salvarDb(db);
-  res.json({ ok: true });
+  const { nome, email, senha, role } = req.body;
+  try {
+    const { rows } = await pool.query(
+      `UPDATE usuarios SET
+        nome  = COALESCE($1, nome),
+        email = COALESCE($2, email),
+        senha = CASE WHEN $3 != '' THEN $3 ELSE senha END,
+        role  = COALESCE($4, role)
+       WHERE id = $5
+       RETURNING id, nome, email, role`,
+      [nome, email, senha || '', role, id]
+    );
+    if (rows.length === 0) return res.status(404).json({ mensagem: 'Usuário não encontrado.' });
+    res.json(rows[0]);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ mensagem: 'Erro interno.' });
+  }
 });
 
-// GET/PUT categorias de despesa
-router.get('/categorias-despesa', (req, res) => {
-  const db = lerDb();
-  res.json(db.categoriasDespesa || []);
-});
-
-router.put('/categorias-despesa', (req, res) => {
-  const db = lerDb();
-  db.categoriasDespesa = req.body;
-  salvarDb(db);
-  res.json({ ok: true });
+router.delete('/:id', async (req, res) => {
+  const id = parseInt(req.params.id);
+  try {
+    await pool.query('DELETE FROM usuarios WHERE id = $1', [id]);
+    res.json({ ok: true });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ mensagem: 'Erro interno.' });
+  }
 });
 
 module.exports = router;

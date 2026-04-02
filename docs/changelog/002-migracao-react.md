@@ -1,7 +1,7 @@
 # 002 — Migração para React
 
 **Data:** 2026-04-01  
-**Status:** 🔄 Planejado
+**Status:** ✅ Concluído
 
 ---
 
@@ -19,74 +19,100 @@ Em Vanilla JS, manter isso exigiria manipulação manual de DOM em escala cresce
 
 ---
 
-## Stack escolhida
+## Stack implementada
 
-| Camada | Tecnologia | Motivo |
+| Camada | Tecnologia | Observação |
 |---|---|---|
 | Framework | React 18 | Componentização, estado reativo |
-| Build | Vite | Setup rápido, dev server moderno |
-| Linguagem | TypeScript | Tipagem ajuda em formulários complexos |
-| Roteamento | React Router | Navegação entre telas sem reload |
-| Estilo | CSS Modules ou Tailwind | A definir |
-| Servidor | Node.js + Express (mantido) | Serve a API futura |
+| Build | Vite | `client/` — proxy `/api` → Express 3004 |
+| Linguagem | JavaScript (JSX) | TypeScript descartado para agilizar |
+| Roteamento | React Router v6 | `<Layout>` com `<Outlet>` |
+| Estilo | CSS global (arquivos existentes) | Todos carregados em `client/index.html` |
+| Servidor | Node.js + Express (mantido) | Porta 3004 |
+| Banco | PostgreSQL | Migrado de JSON file (`db.json`) |
+| Dev | `npm run dev` (concurrently) | Roda Vite + Express juntos |
 | Deploy | Render (mantido) | Sem mudança |
 
 ---
 
-## O que será reescrito
+## O que foi reescrito
 
-| Tela atual | Equivalente React |
+| Arquivo antigo | Componente React |
 |---|---|
-| `login.html` | `<Login />` |
-| `dashboard.html` | `<Dashboard />` |
-| `pedido.html` | `<DetalhePedido />` |
-| `consulta.html` | `<ConsultaPublica />` |
-
-Os dados continuam mockados por enquanto — a migração é apenas do frontend. A lógica de renderização existente serve de referência.
-
----
-
-## O que será aproveitado
-
-- CSS existente (pode ser adaptado para CSS Modules)
-- Lógica de negócio dos arquivos `.js` (filtros, cálculos, timeline)
-- Mockup de Relatórios (`Relatórios Mockup.md`) — já é um componente React pronto
+| `login.html` | `pages/Login.jsx` |
+| `dashboard.html` | `pages/Dashboard.jsx` |
+| `pedido.html` | `pages/DetalhePedido.jsx` |
+| `consulta.html` | `pages/ConsultaPublica.jsx` |
+| *(novo)* | `pages/Clientes.jsx` |
+| *(novo)* | `pages/Configuracoes.jsx` |
+| *(novo)* | `pages/Financeiro.jsx` |
+| *(novo)* | `pages/Relatorios.jsx` |
 
 ---
 
-## Plano de implementação — features em ordem
+## Componentes criados
 
-Após a migração base, as features serão implementadas nesta ordem:
+| Componente | Descrição |
+|---|---|
+| `Layout.jsx` | Sidebar desktop + drawer mobile (hamburger) + `<Outlet>` |
+| `RotaProtegida.jsx` | Guarda de rota — redireciona para login se não autenticado |
+| `ModalNovoPedido.jsx` | Formulário completo de novo pedido com precificação dinâmica |
+| `ModalCliente.jsx` | Cadastro/edição de cliente PF/PJ com CEP autocomplete (ViaCEP) |
 
-| # | Feature | Referência |
+---
+
+## Backend — migração para PostgreSQL
+
+Substituído o sistema de arquivo JSON (`db.json`) por PostgreSQL:
+
+- `src/db.js` — Pool de conexão via `pg`
+- `.env` — `DATABASE_URL=postgresql://postgres:1234@localhost:5432/sistema_confeccao`
+- Todas as rotas migradas: `auth`, `usuarios`, `clientes`, `pedidos`, `config`, `funcionarios`, `compras`
+- Pedidos usam transação (`BEGIN/COMMIT/ROLLBACK`) e criam 10 etapas automaticamente
+
+---
+
+## Arquivos deletados
+
+- `public/assets/js/` — 13 arquivos Vanilla JS
+- `public/pages/` — 9 arquivos HTML
+- `vercel.json` — deploy migrado para Render
+
+---
+
+## Problemas encontrados e soluções
+
+| Problema | Causa | Solução |
 |---|---|---|
-| 1 | Migração base (Login, Dashboard, Pedido, Consulta) | Este documento |
-| 2 | Cadastro de Clientes (PF/PJ, CEP, modal reutilizável) | `CadastroClientes.md` |
-| 3 | Gestão de Pedidos — novo pedido com catálogo completo | `CatalogoProdutos.md` |
-| 4 | Precificação dinâmica | `Financeiro.md` |
-| 5 | Compras de Material + Salários | `Financeiro.md` |
-| 6 | Configuração de preços (painel admin) | `Financeiro.md` |
-| 7 | Módulo de Relatórios | `relatorios.md` + `Relatórios Mockup.md` |
-
-Cada item terá seu próprio arquivo de changelog (`003`, `004`, ...) documentando o que foi feito.
+| Layout não preenchia a largura total | CSS duplicado entre arquivos carregados globalmente (`body { display: flex }` em `consulta.css`, `login.css`) | Removidos os `body` rules; redesenhado o layout com `.content-wrapper` max-width 1200px centralizado |
+| CSS em cache no browser | Arquivos em `public/assets/css/` não têm cache-busting automático no Vite publicDir | Adicionado `?v=N` nas `<link>` tags do `client/index.html` |
+| CSS da página de pedido sem estilo | `DetalhePedido.jsx` usava classes novas que não existiam no `pedido.css` | Adicionadas as classes `pedido-infos-grid`, `info-card`, `section-card`, `peca-item`, `tamanho-badge`, etc. |
 
 ---
 
-## Estrutura de pastas prevista
+## Estrutura de pastas final
 
 ```
+client/
+  src/
+    pages/          ← uma página por rota
+    components/     ← Layout, modais, RotaProtegida
+    utils/
+      config.js     ← constantes, cálculo de preço, helpers
+    api.js          ← todas as chamadas HTTP
+  index.html        ← carrega os CSS de public/assets/css/
 src/
-  components/       ← componentes reutilizáveis (botões, modais, tabelas)
-  pages/            ← uma pasta por tela
-  hooks/            ← hooks customizados (usePrint, useBuscaCliente, etc.)
-  styles/           ← CSS global e variáveis
-  data/             ← dados mock (migrados do dados.js atual)
-  types/            ← tipos TypeScript
+  routes/           ← auth, clientes, pedidos, config, funcionarios, compras
+  db.js             ← Pool PostgreSQL
+  server.js         ← Express
+public/
+  assets/css/       ← CSS global (todos carregam em todas as páginas)
 ```
 
 ---
 
 ## Notas
 
-- O protótipo Vanilla JS continua acessível via tag `v0.1.0-prototype` no git
-- A branch de migração deve ser criada a partir da `main` após o merge dos docs
+- O protótipo Vanilla JS foi deletado da branch `main`
+- Dados não foram migrados — banco iniciado do zero
+- CSS ainda é global (todos os arquivos carregam juntos) — risco de conflito entre classes de páginas diferentes

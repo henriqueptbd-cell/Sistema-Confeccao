@@ -2,11 +2,6 @@
    FCamargo — Consulta Pública de Pedido
    ======================================== */
 
-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
 
 /* ---- Cabeçalho ---- */
 header {

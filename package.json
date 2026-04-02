@@ -19,6 +19,7 @@
   },
   "scripts": {
     "start": "node ./src/server.js",
+    "build": "npm install && npm install --prefix client && npm run build --prefix client",
     "dev": "concurrently \"node --watch ./src/server.js\" \"npm run dev --prefix client\"",
     "dev:server": "node --watch ./src/server.js",
     "dev:client": "npm run dev --prefix client"

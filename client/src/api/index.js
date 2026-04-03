@@ -1,7 +1,7 @@
 // Camada de acesso à API REST do backend.
 // Todas as funções retornam o JSON parseado ou lançam um Error.
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3004'
+const API_BASE_URL = import.meta.env.VITE_API_URL || ''
 
 function getToken() {
   return sessionStorage.getItem('token')

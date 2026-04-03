@@ -1,31 +1,44 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import { buscarPedido, concluirEtapa, excluirPedido, entregarPedido } from '../api'
+import { buscarPedido, concluirEtapa, desfazerEtapa, excluirPedido, entregarPedido } from '../api'
 import { totalPecas, totalPedido, formatarMoeda } from '../utils/config'
 
-function Timeline({ pedido, onConcluir }) {
+function Timeline({ pedido, onConcluir, onDesfazer }) {
+  const ordemAtual    = pedido.etapas.find(e => !e.concluida)?.ordem
+  const ultimaConcluidaOrdem = pedido.etapas
+    .filter(e => e.concluida && e.ordem > 1)
+    .at(-1)?.ordem
+
   return (
     <div className="timeline">
-      {pedido.etapas.map(etapa => (
-        <div key={etapa.ordem} className={`step ${etapa.concluida ? 'step-done' : 'step-pending'}`}>
-          {etapa.ordem < pedido.etapas.length && <div className="step-line" />}
-          <div className="step-icon">{etapa.concluida ? '✓' : '○'}</div>
-          <div className="step-body">
-            <div className="step-name">{etapa.nome}</div>
-            {etapa.concluida && etapa.concluidaEm && (
-              <div className="step-date">{etapa.concluidaEm}</div>
+      {pedido.etapas.map(etapa => {
+        const isCurrent  = etapa.ordem === ordemAtual
+        const isDesfazer = etapa.ordem === ultimaConcluidaOrdem
+        const classe = etapa.concluida ? 'step-done' : isCurrent ? 'step-current' : 'step-pending'
+        return (
+          <div key={etapa.ordem} className={`step ${classe}`}>
+            {etapa.ordem < pedido.etapas.length && <div className="step-line" />}
+            <div className="step-icon">{etapa.concluida ? '✓' : isCurrent ? '●' : '○'}</div>
+            <div className="step-body">
+              <div className="step-name">{etapa.nome}</div>
+              {isCurrent && <div className="step-current-label">Em andamento</div>}
+              {etapa.concluida && etapa.concluidaEm && (
+                <div className="step-date">{etapa.concluidaEm}</div>
+              )}
+            </div>
+            {!etapa.concluida && pedido.status !== 'concluido' && (
+              <button className="step-btn-concluir" onClick={() => onConcluir(etapa.ordem)}>
+                ✓ Concluir
+              </button>
+            )}
+            {isDesfazer && (
+              <button className="step-btn-desfazer" onClick={() => onDesfazer(etapa.ordem)}>
+                ↩ Desfazer
+              </button>
             )}
           </div>
-          {!etapa.concluida && pedido.status !== 'concluido' && (
-            <button
-              className="step-btn-concluir"
-              onClick={() => onConcluir(etapa.ordem)}
-            >
-              ✓ Concluir
-            </button>
-          )}
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }
@@ -46,8 +59,12 @@ export default function DetalhePedido() {
   }, [id])
 
   async function handleConcluir(ordem) {
-    if (!confirm('Confirmar conclusão desta etapa?')) return
     const atualizado = await concluirEtapa(pedido.id, ordem)
+    setPedido(atualizado)
+  }
+
+  async function handleDesfazer(ordem) {
+    const atualizado = await desfazerEtapa(pedido.id, ordem)
     setPedido(atualizado)
   }
 
@@ -58,7 +75,6 @@ export default function DetalhePedido() {
   }
 
   async function handleEntregar() {
-    if (!confirm('Confirmar entrega do pedido?')) return
     const atualizado = await entregarPedido(pedido.id)
     setPedido(atualizado)
   }
@@ -126,7 +142,7 @@ export default function DetalhePedido() {
       {/* Timeline */}
       <div className="section-card" style={{ marginBottom: 24 }}>
         <div className="section-title">Linha do Tempo</div>
-        <Timeline pedido={pedido} onConcluir={handleConcluir} />
+        <Timeline pedido={pedido} onConcluir={handleConcluir} onDesfazer={handleDesfazer} />
       </div>
 
       {/* Peças */}

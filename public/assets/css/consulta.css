@@ -2,6 +2,180 @@
    FCamargo — Consulta Pública de Pedido
    ======================================== */
 
+/* ---- Layout da página ---- */
+.consulta-page {
+  min-height: 100vh;
+  background: var(--gray-light);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+.consulta-container {
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.consulta-header {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+/* ---- Card de busca ---- */
+.consulta-card {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 36px 32px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+}
+
+.consulta-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--dark);
+  margin-bottom: 6px;
+}
+
+.consulta-subtitle {
+  font-size: 14px;
+  color: var(--gray);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.consulta-form {
+  display: flex;
+  gap: 10px;
+}
+
+.consulta-input {
+  flex: 1;
+  padding: 13px 16px;
+  border: 2px solid #e8e8e8;
+  border-radius: 12px;
+  font-size: 18px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  color: var(--dark);
+  outline: none;
+  transition: border-color 0.2s;
+  letter-spacing: 2px;
+}
+
+.consulta-input::placeholder { font-weight: 400; color: #ccc; letter-spacing: 0; }
+.consulta-input:focus { border-color: var(--accent4); }
+
+.consulta-btn {
+  padding: 13px 24px;
+  background: var(--dark);
+  color: var(--white);
+  border: none;
+  border-radius: 12px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+.consulta-btn:hover { background: #333; }
+.consulta-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ---- Card de resultado ---- */
+.resultado-card {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.resultado-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.resultado-numero {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 22px;
+  color: var(--dark);
+}
+
+.resultado-infos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.resultado-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.resultado-info-item .info-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gray);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.resultado-info-item .info-valor {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--dark);
+}
+
+/* ---- Não encontrado ---- */
+.nao-encontrado {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  color: var(--gray);
+  font-size: 14px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+}
+
+/* ---- Link rodapé ---- */
+.back-link {
+  font-size: 13px;
+  color: var(--gray);
+  text-decoration: none;
+  padding: 8px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  transition: all 0.2s;
+  display: inline-block;
+}
+.back-link:hover { color: var(--dark); border-color: #ccc; background: var(--gray-light); }
+
+/* ---- Timeline (seção) ---- */
+.timeline-section-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--gray);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 16px;
+}
+
 
 /* ---- Cabeçalho ---- */
 header {
@@ -224,6 +398,8 @@ main {
 .step-name              { font-size: 14px; font-weight: 600; color: var(--dark); }
 .step-pending .step-name { color: #ccc; }
 .step-date              { font-size: 12px; color: var(--gray); margin-top: 2px; }
+.step-current .step-icon { background: var(--accent4); color: white; }
+.step-current-label     { font-size: 11px; font-weight: 700; color: var(--accent4); margin-top: 2px; }
 
 /* ---- Não encontrado ---- */
 .nao-encontrado {

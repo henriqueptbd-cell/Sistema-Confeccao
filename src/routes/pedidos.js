@@ -147,16 +147,36 @@ router.delete('/:id', async (req, res) => {
 });
 
 router.patch('/:id/entregar', async (req, res) => {
-  const hoje    = new Date().toLocaleDateString('pt-BR');
-  const hojeISO = new Date().toISOString().slice(0, 10);
+  const hoje = new Date().toLocaleDateString('pt-BR');
   try {
     const { rowCount } = await pool.query(
-      `UPDATE pedidos SET status='entregue', entregue_em=$1, entregue_em_iso=$2
-       WHERE id=$3 AND status='concluido'`,
-      [hoje, hojeISO, req.params.id]
+      `UPDATE pedidos SET status='entregue', entregue_em=$1 WHERE id=$2 AND status='concluido'`,
+      [hoje, req.params.id]
     );
     if (rowCount === 0) return res.status(400).json({ mensagem: 'Pedido não encontrado ou não está concluído.' });
     res.json(await buscarPedidoCompleto(parseInt(req.params.id)));
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ mensagem: 'Erro interno.' });
+  }
+});
+
+router.patch('/:id/etapas/:ordem/desfazer', async (req, res) => {
+  const pedidoId = parseInt(req.params.id);
+  const ordem    = parseInt(req.params.ordem);
+  try {
+    const { rowCount } = await pool.query(
+      `UPDATE pedido_etapas SET concluida=false, concluida_em=null
+       WHERE pedido_id=$1 AND ordem=$2 AND concluida=true`,
+      [pedidoId, ordem]
+    );
+    if (rowCount === 0) return res.status(400).json({ mensagem: 'Etapa não encontrada ou não está concluída.' });
+
+    if (ordem === 9) {
+      await pool.query(`UPDATE pedidos SET status='producao' WHERE id=$1`, [pedidoId]);
+    }
+
+    res.json(await buscarPedidoCompleto(pedidoId));
   } catch (e) {
     console.error(e);
     res.status(500).json({ mensagem: 'Erro interno.' });

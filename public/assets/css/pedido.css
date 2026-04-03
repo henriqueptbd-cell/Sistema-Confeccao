@@ -318,6 +318,23 @@
   transition: width 0.4s ease;
 }
 
+.step-btn-desfazer {
+  flex-shrink: 0;
+  margin-left: auto;
+  padding: 5px 12px;
+  background: #fef3e2;
+  color: #d68910;
+  border: none;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'Montserrat', sans-serif;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+.step-btn-desfazer:hover { background: #fde8b0; }
+
 .step-btn-concluir {
   flex-shrink: 0;
   margin-left: auto;
@@ -416,6 +433,7 @@
 .step-name             { font-size: 13px; font-weight: 600; color: var(--dark); }
 .step-pending .step-name { color: #bbb; }
 .step-date             { font-size: 11px; color: var(--gray); margin-top: 2px; }
+.step-current-label    { font-size: 11px; font-weight: 700; color: var(--accent4); margin-top: 2px; }
 
 /* ---- Modal de confirmação ---- */
 .modal-overlay {

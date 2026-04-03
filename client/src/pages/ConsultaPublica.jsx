@@ -3,20 +3,27 @@ import { Link } from 'react-router-dom'
 import { buscarPedido } from '../api'
 
 function Timeline({ pedido }) {
+  const ordemAtual = pedido.etapas.find(e => !e.concluida)?.ordem
+
   return (
     <div className="timeline">
-      {pedido.etapas.map(etapa => (
-        <div key={etapa.ordem} className={`step ${etapa.concluida ? 'step-done' : 'step-pending'}`}>
-          {etapa.ordem < pedido.etapas.length && <div className="step-line" />}
-          <div className="step-icon">{etapa.concluida ? '✓' : '○'}</div>
-          <div className="step-body">
-            <div className="step-name">{etapa.nome}</div>
-            {etapa.concluida && etapa.concluidaEm && (
-              <div className="step-date">{etapa.concluidaEm}</div>
-            )}
+      {pedido.etapas.map(etapa => {
+        const isCurrent = etapa.ordem === ordemAtual
+        const classe = etapa.concluida ? 'step-done' : isCurrent ? 'step-current' : 'step-pending'
+        return (
+          <div key={etapa.ordem} className={`step ${classe}`}>
+            {etapa.ordem < pedido.etapas.length && <div className="step-line" />}
+            <div className="step-icon">{etapa.concluida ? '✓' : isCurrent ? '●' : '○'}</div>
+            <div className="step-body">
+              <div className="step-name">{etapa.nome}</div>
+              {isCurrent && <div className="step-current-label">Em andamento</div>}
+              {etapa.concluida && etapa.concluidaEm && (
+                <div className="step-date">{etapa.concluidaEm}</div>
+              )}
+            </div>
           </div>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }

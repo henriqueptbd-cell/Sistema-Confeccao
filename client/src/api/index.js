@@ -27,6 +27,7 @@ export const atualizarPedido    = (id, dados) => req(`/api/pedidos/${id}`, json(
 export const excluirPedido      = (id)       => req(`/api/pedidos/${id}`, { method: 'DELETE' })
 export const entregarPedido     = (id)       => req(`/api/pedidos/${id}/entregar`, { method: 'PATCH' })
 export const concluirEtapa      = (id, ordem) => req(`/api/pedidos/${id}/etapas/${ordem}`, { method: 'PATCH' })
+export const desfazerEtapa      = (id, ordem) => req(`/api/pedidos/${id}/etapas/${ordem}/desfazer`, { method: 'PATCH' })
 
 // ── Clientes ─────────────────────────────────────────────────────────────────
 

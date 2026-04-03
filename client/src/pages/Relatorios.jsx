@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
+import { listarPedidos, listarCompras, listarPagamentosSalario, listarCustosPessoal, listarCustosFixosRegistrosTodos, listarTodasParcelas } from '../api'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 const fmt      = v => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
@@ -9,10 +10,10 @@ const addDays  = (iso, n) => { const d = new Date(iso); d.setDate(d.getDate()+n)
 const inRange  = (iso, ini, fim) => iso >= ini && iso <= fim
 
 const PRESETS = [
-  { id: 'consolidado',   label: 'Consolidado',   blocos: ['vendas','compras','salarios'] },
+  { id: 'consolidado',   label: 'Consolidado',   blocos: ['vendas','compras','folha','custosFixos','parcelas'] },
   { id: 'vendas',        label: 'Vendas',         blocos: ['vendas'] },
   { id: 'compras',       label: 'Compras',        blocos: ['compras'] },
-  { id: 'salarios',      label: 'Salários',       blocos: ['salarios'] },
+  { id: 'folha',         label: 'Folha de pessoal', blocos: ['folha'] },
   { id: 'personalizado', label: 'Personalizado',  blocos: null },
 ]
 
@@ -77,23 +78,23 @@ function Tabela({ cols, rows }) {
 
 // ─── Blocos ───────────────────────────────────────────────────────────────────
 function CardVendas({ ini, fim, subcats, pedidos }) {
-  const filtrados = pedidos.filter(p => inRange(p.prazoISO || p.dataEntrada, ini, fim))
-  const aReceber  = filtrados.filter(p => !p.pago)
-  const entregues = filtrados.filter(p => p.entregue || p.status === 'entregue')
-  const recebidos = filtrados.filter(p => p.pago)
+  const filtrados  = pedidos.filter(p => p.prazoISO && inRange(p.prazoISO, ini, fim))
+  const emProducao = filtrados.filter(p => p.status === 'producao')
+  const concluidos = filtrados.filter(p => p.status === 'concluido')
+  const entregues  = filtrados.filter(p => p.status === 'entregue')
 
   const grupos = [
-    subcats.aReceber  && { label: 'A Receber',  cor: '#f59e0b', lista: aReceber  },
-    subcats.entregues && { label: 'Entregues',  cor: '#3b82f6', lista: entregues },
-    subcats.recebidos && { label: 'Recebidos',  cor: '#22c55e', lista: recebidos },
+    subcats.emProducao && { label: 'Em produção', cor: '#6b7280', lista: emProducao },
+    subcats.concluidos && { label: 'Concluídos',  cor: '#f59e0b', lista: concluidos },
+    subcats.entregues  && { label: 'Entregues',   cor: '#22c55e', lista: entregues  },
   ].filter(Boolean)
 
   const total = grupos.reduce((s, g) => s + g.lista.reduce((a, p) => a + (p.valor || 0), 0), 0)
 
   const statusBadge = p => {
-    if (p.pago)                           return <Badge color="green">Recebido</Badge>
-    if (p.entregue || p.status === 'entregue') return <Badge color="blue">Entregue</Badge>
-    return <Badge color="amber">A Receber</Badge>
+    if (p.status === 'entregue')  return <Badge color="green">Entregue</Badge>
+    if (p.status === 'concluido') return <Badge color="amber">Concluído</Badge>
+    return <Badge color="gray">Em produção</Badge>
   }
 
   return (
@@ -109,7 +110,7 @@ function CardVendas({ ini, fim, subcats, pedidos }) {
             cols={['Pedido','Cliente','Prazo','Status','Valor']}
             rows={g.lista.map(p => [
               `#${p.id}`, p.cliente, fmtDate(p.prazoISO || ''), statusBadge(p),
-              <span style={{ fontWeight: 700, color: p.pago ? '#166534' : '#92400e' }}>{fmt(p.valor || 0)}</span>
+              <span style={{ fontWeight: 700, color: p.status === 'entregue' ? '#166534' : '#92400e' }}>{fmt(p.valor || 0)}</span>
             ])}
           />
         </div>
@@ -131,44 +132,114 @@ function CardCompras({ ini, fim, compras }) {
   )
 }
 
-function CardSalarios({ salarios }) {
-  const total = salarios.reduce((s, f) => s + f.valor, 0)
+function CardFolha({ ini, fim, pagamentos, custosPessoal }) {
+  const pagsNoperiodo   = pagamentos.filter(p => p.dataPagamento && inRange(p.dataPagamento, ini, fim))
+  const custosNoPeriodo = custosPessoal.filter(c => c.data && inRange(c.data, ini, fim))
+  const totalSal  = pagsNoperiodo.reduce((s, p) => s + p.valorPago, 0)
+  const totalCust = custosNoPeriodo.reduce((s, c) => s + c.valor, 0)
+  const total = totalSal + totalCust
   return (
-    <SectionCard dot="#818cf8" title="Salários" badge={<Badge color="gray">{salarios.length} funcionárias</Badge>} total={total}>
+    <SectionCard dot="#818cf8" title="Folha de Pessoal" badge={<Badge color="gray">{pagsNoperiodo.length} pagamentos</Badge>} total={total}>
+      {pagsNoperiodo.length > 0 && (
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#818cf8', textTransform: 'uppercase', marginBottom: 6 }}>Salários pagos — {fmt(totalSal)}</div>
+          <Tabela
+            cols={['Funcionária','Data pagamento','Valor']}
+            rows={pagsNoperiodo.map(p => [
+              p.funcionarioNome || `#${p.funcionarioId}`,
+              fmtDate(p.dataPagamento),
+              <span style={{ fontWeight: 700, color: '#3730a3' }}>{fmt(p.valorPago)}</span>
+            ])}
+          />
+        </div>
+      )}
+      {custosNoPeriodo.length > 0 && (
+        <div>
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#818cf8', textTransform: 'uppercase', marginBottom: 6 }}>Custos adicionais — {fmt(totalCust)}</div>
+          <Tabela
+            cols={['Funcionária','Data','Descrição','Valor']}
+            rows={custosNoPeriodo.map(c => [
+              c.funcionarioNome || '—',
+              fmtDate(c.data),
+              c.descricao,
+              <span style={{ fontWeight: 700, color: '#3730a3' }}>{fmt(c.valor)}</span>
+            ])}
+          />
+        </div>
+      )}
+    </SectionCard>
+  )
+}
+
+function CardCustosFixos({ ini, fim, registros }) {
+  const lista = registros.filter(r => r.dataPagamento && inRange(r.dataPagamento, ini, fim))
+  const total = lista.reduce((s, r) => s + (r.valorPago || 0), 0)
+  return (
+    <SectionCard dot="#f97316" title="Custos Fixos" badge={<Badge color="gray">{lista.length} registros</Badge>} total={total}>
       <Tabela
-        cols={['Funcionária','Valor']}
-        rows={salarios.map(f => [f.nome, <span style={{ fontWeight: 700, color: '#3730a3' }}>{fmt(f.valor)}</span>])}
+        cols={['Custo','Data pagamento','Valor']}
+        rows={lista.map(r => [
+          r.tipoNome,
+          fmtDate(r.dataPagamento),
+          <span style={{ fontWeight: 700, color: '#c2410c' }}>{fmt(r.valorPago)}</span>
+        ])}
       />
     </SectionCard>
   )
 }
 
-function ResumoConsolidado({ blocos, ini, fim, pedidos, compras, salarios }) {
-  const vendas    = blocos.includes('vendas')   ? pedidos.filter(p => inRange(p.prazoISO || '', ini, fim) && p.pago).reduce((s, p) => s + (p.valor||0), 0) : 0
-  const aReceber  = blocos.includes('vendas')   ? pedidos.filter(p => inRange(p.prazoISO || '', ini, fim) && !p.pago).reduce((s, p) => s + (p.valor||0), 0) : 0
-  const custoComp = blocos.includes('compras')  ? compras.filter(c => inRange(c.dataCompra, ini, fim)).reduce((s, c) => s + c.valorTotal, 0) : 0
-  const custoSal  = blocos.includes('salarios') ? salarios.reduce((s, f) => s + f.valor, 0) : 0
-  const real      = vendas - custoComp - custoSal
-  const previsto  = vendas + aReceber - custoComp - custoSal
-  const cor       = real > 0 ? '#15803d' : real < 0 ? '#b91c1c' : '#6b7280'
+function CardParcelas({ ini, fim, parcelas }) {
+  const lista = parcelas.filter(p => p.dataPagamento && inRange(p.dataPagamento, ini, fim))
+  const total = lista.reduce((s, p) => s + (p.valorPago || 0), 0)
+  return (
+    <SectionCard dot="#06b6d4" title="Parcelas Pagas" badge={<Badge color="gray">{lista.length} parcelas</Badge>} total={total}>
+      <Tabela
+        cols={['Descrição','Parcela','Data pagamento','Valor']}
+        rows={lista.map(p => [
+          p.parcelamentoDescricao,
+          `#${p.numero}`,
+          fmtDate(p.dataPagamento),
+          <span style={{ fontWeight: 700, color: '#0e7490' }}>{fmt(p.valorPago)}</span>
+        ])}
+      />
+    </SectionCard>
+  )
+}
+
+function ResumoConsolidado({ blocos, ini, fim, pedidos, compras, pagamentos, custosPessoal, custosFixosRegistros, parcelas }) {
+  const pedidosPeriodo = blocos.includes('vendas') ? pedidos.filter(p => p.prazoISO && inRange(p.prazoISO, ini, fim)) : []
+  const entregues      = pedidosPeriodo.filter(p => p.status === 'entregue').reduce((s, p) => s + (p.valor||0), 0)
+  const concluidos     = pedidosPeriodo.filter(p => p.status === 'concluido').reduce((s, p) => s + (p.valor||0), 0)
+  const custoComp      = blocos.includes('compras')     ? compras.filter(c => inRange(c.dataCompra, ini, fim)).reduce((s, c) => s + c.valorTotal, 0) : 0
+  const custoFolha     = blocos.includes('folha')       ?
+    pagamentos.filter(p => p.dataPagamento && inRange(p.dataPagamento, ini, fim)).reduce((s, p) => s + p.valorPago, 0) +
+    custosPessoal.filter(c => c.data && inRange(c.data, ini, fim)).reduce((s, c) => s + c.valor, 0) : 0
+  const custoFixos     = blocos.includes('custosFixos') ? custosFixosRegistros.filter(r => r.dataPagamento && inRange(r.dataPagamento, ini, fim)).reduce((s, r) => s + (r.valorPago||0), 0) : 0
+  const custoParcelas  = blocos.includes('parcelas')    ? parcelas.filter(p => p.dataPagamento && inRange(p.dataPagamento, ini, fim)).reduce((s, p) => s + (p.valorPago||0), 0) : 0
+
+  const real     = entregues - custoComp - custoFolha - custoFixos - custoParcelas
+  const previsto = entregues + concluidos - custoComp - custoFolha - custoFixos - custoParcelas
+  const cor      = real > 0 ? '#15803d' : real < 0 ? '#b91c1c' : '#6b7280'
 
   return (
     <div style={{ background: real >= 0 ? '#f0fdf4' : '#fef2f2', border: `1px solid ${cor}30`, borderRadius: 12, padding: '20px 22px' }}>
       <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 14, color: '#111827' }}>Resumo Consolidado</div>
       <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', marginBottom: 14 }}>
-        {blocos.includes('vendas')   && <Parcela label="Vendas recebidas" val={vendas}    cor="#22c55e" sinal="+" />}
-        {blocos.includes('vendas') && aReceber > 0 && <Parcela label="A receber (previsto)" val={aReceber} cor="#f59e0b" sinal="+" />}
-        {blocos.includes('compras')  && <Parcela label="Compras"          val={custoComp} cor="#f59e0b" sinal="−" />}
-        {blocos.includes('salarios') && <Parcela label="Salários"         val={custoSal}  cor="#818cf8" sinal="−" />}
+        {blocos.includes('vendas')      && <Parcela label="Entregues"          val={entregues}     cor="#22c55e" sinal="+" />}
+        {blocos.includes('vendas') && concluidos > 0 && <Parcela label="Concluídos (a entregar)" val={concluidos} cor="#f59e0b" sinal="+" />}
+        {blocos.includes('compras')     && <Parcela label="Compras"            val={custoComp}     cor="#f59e0b" sinal="−" />}
+        {blocos.includes('folha')       && <Parcela label="Folha de pessoal"   val={custoFolha}    cor="#818cf8" sinal="−" />}
+        {blocos.includes('custosFixos') && <Parcela label="Custos fixos"       val={custoFixos}    cor="#f97316" sinal="−" />}
+        {blocos.includes('parcelas')    && <Parcela label="Parcelas pagas"     val={custoParcelas} cor="#06b6d4" sinal="−" />}
       </div>
       <div style={{ borderTop: '1px dashed #e5e7eb', paddingTop: 14, display: 'flex', flexWrap: 'wrap', gap: 24 }}>
         <div>
-          <div style={{ fontSize: 11, fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', marginBottom: 2 }}>Resultado Real</div>
+          <div style={{ fontSize: 11, fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', marginBottom: 2 }}>Resultado Real (só entregues)</div>
           <div style={{ fontSize: 22, fontWeight: 800, color: cor }}>{fmt(real)}</div>
         </div>
-        {aReceber > 0 && blocos.includes('vendas') && (
+        {concluidos > 0 && blocos.includes('vendas') && (
           <div>
-            <div style={{ fontSize: 11, fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', marginBottom: 2 }}>Previsto (incl. A Receber)</div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: '#9ca3af', textTransform: 'uppercase', marginBottom: 2 }}>Previsto (incl. Concluídos)</div>
             <div style={{ fontSize: 22, fontWeight: 800, color: previsto > 0 ? '#1d4ed8' : '#b91c1c' }}>{fmt(previsto)}</div>
           </div>
         )}
@@ -191,13 +262,35 @@ export default function Relatorios() {
   const [ini,         setIni]         = useState(firstOfMonth())
   const [fim,         setFim]         = useState(today())
   const [preset,      setPreset]      = useState('consolidado')
-  const [customBlocos, setCustomBlocos] = useState({ vendas: true, compras: true, salarios: false })
-  const [subcats,     setSubcats]     = useState({ aReceber: true, entregues: true, recebidos: true })
+  const [customBlocos, setCustomBlocos] = useState({ vendas: true, compras: true, folha: false, custosFixos: false, parcelas: false })
+  const [subcats,     setSubcats]     = useState({ emProducao: false, concluidos: true, entregues: true })
 
-  // Dados mock — serão substituídos por chamadas à API quando o banco estiver pronto
-  const pedidos  = []
-  const compras  = []
-  const salarios = []
+  const [pedidos,             setPedidos]             = useState([])
+  const [compras,             setCompras]             = useState([])
+  const [pagamentos,          setPagamentos]          = useState([])
+  const [custosPessoal,       setCustosPessoal]       = useState([])
+  const [custosFixosRegistros, setCustosFixosRegistros] = useState([])
+  const [parcelas,            setParcelas]            = useState([])
+
+  useEffect(() => {
+    listarPedidos().then(lista => {
+      setPedidos(lista.map(p => ({
+        ...p,
+        valor: (p.pecas || []).reduce((s, peca) => {
+          const qtd = peca.tipo === 'Bandeira'
+            ? (peca.quantidade || 1)
+            : Object.values(peca.tamanhos || {}).reduce((a, v) => a + v, 0)
+          return s + (peca.valorUnitario || 0) * qtd
+        }, 0),
+      })))
+    }).catch(() => {})
+
+    listarCompras().then(setCompras).catch(e => console.error('[Relatorios] compras:', e))
+    listarPagamentosSalario().then(setPagamentos).catch(e => console.error('[Relatorios] pagamentos:', e))
+    listarCustosPessoal().then(setCustosPessoal).catch(e => console.error('[Relatorios] custosPessoal:', e))
+    listarCustosFixosRegistrosTodos().then(setCustosFixosRegistros).catch(e => console.error('[Relatorios] custosFixos:', e))
+    listarTodasParcelas().then(setParcelas).catch(e => console.error('[Relatorios] parcelas:', e))
+  }, [])
 
   const blocosAtivos = useMemo(() => {
     if (preset !== 'personalizado') return PRESETS.find(p => p.id === preset).blocos
@@ -264,19 +357,21 @@ export default function Relatorios() {
           <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: 12, display: 'flex', flexWrap: 'wrap', gap: 16 }}>
             <div>
               <div style={lbl}>Blocos</div>
-              <div style={{ display: 'flex', gap: 6 }}>
-                <CheckTag checked={customBlocos.vendas}   onChange={() => setCustomBlocos(p => ({...p, vendas:   !p.vendas}))}   color="#22c55e">Vendas</CheckTag>
-                <CheckTag checked={customBlocos.compras}  onChange={() => setCustomBlocos(p => ({...p, compras:  !p.compras}))}  color="#f59e0b">Compras</CheckTag>
-                <CheckTag checked={customBlocos.salarios} onChange={() => setCustomBlocos(p => ({...p, salarios: !p.salarios}))} color="#818cf8">Salários</CheckTag>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                <CheckTag checked={customBlocos.vendas}      onChange={() => setCustomBlocos(p => ({...p, vendas:      !p.vendas}))}      color="#22c55e">Vendas</CheckTag>
+                <CheckTag checked={customBlocos.compras}     onChange={() => setCustomBlocos(p => ({...p, compras:     !p.compras}))}     color="#f59e0b">Compras</CheckTag>
+                <CheckTag checked={customBlocos.folha}       onChange={() => setCustomBlocos(p => ({...p, folha:       !p.folha}))}       color="#818cf8">Folha de pessoal</CheckTag>
+                <CheckTag checked={customBlocos.custosFixos} onChange={() => setCustomBlocos(p => ({...p, custosFixos: !p.custosFixos}))} color="#f97316">Custos fixos</CheckTag>
+                <CheckTag checked={customBlocos.parcelas}    onChange={() => setCustomBlocos(p => ({...p, parcelas:    !p.parcelas}))}    color="#06b6d4">Parcelas</CheckTag>
               </div>
             </div>
             {customBlocos.vendas && (
               <div>
                 <div style={lbl}>Subcategorias de Vendas</div>
                 <div style={{ display: 'flex', gap: 6 }}>
-                  <CheckTag checked={subcats.aReceber}  onChange={() => setSubcats(p => ({...p, aReceber:  !p.aReceber}))}  color="#f59e0b">A Receber</CheckTag>
-                  <CheckTag checked={subcats.entregues} onChange={() => setSubcats(p => ({...p, entregues: !p.entregues}))} color="#3b82f6">Entregues</CheckTag>
-                  <CheckTag checked={subcats.recebidos} onChange={() => setSubcats(p => ({...p, recebidos: !p.recebidos}))} color="#22c55e">Recebidos</CheckTag>
+                  <CheckTag checked={subcats.emProducao} onChange={() => setSubcats(p => ({...p, emProducao: !p.emProducao}))} color="#6b7280">Em produção</CheckTag>
+                  <CheckTag checked={subcats.concluidos} onChange={() => setSubcats(p => ({...p, concluidos: !p.concluidos}))} color="#f59e0b">Concluídos</CheckTag>
+                  <CheckTag checked={subcats.entregues}  onChange={() => setSubcats(p => ({...p, entregues:  !p.entregues}))}  color="#22c55e">Entregues</CheckTag>
                 </div>
               </div>
             )}
@@ -289,10 +384,12 @@ export default function Relatorios() {
         {blocosAtivos.length === 0
           ? <div style={{ textAlign: 'center', color: '#9ca3af', padding: 48 }}>Selecione ao menos um bloco.</div>
           : <>
-              {blocosAtivos.includes('vendas')   && <CardVendas   ini={ini} fim={fim} subcats={preset === 'personalizado' ? subcats : { aReceber: true, entregues: true, recebidos: true }} pedidos={pedidos} />}
-              {blocosAtivos.includes('compras')  && <CardCompras  ini={ini} fim={fim} compras={compras} />}
-              {blocosAtivos.includes('salarios') && <CardSalarios salarios={salarios} />}
-              {blocosAtivos.length >= 2          && <ResumoConsolidado blocos={blocosAtivos} ini={ini} fim={fim} pedidos={pedidos} compras={compras} salarios={salarios} />}
+              {blocosAtivos.includes('vendas')      && <CardVendas      ini={ini} fim={fim} subcats={preset === 'personalizado' ? subcats : { aReceber: true, entregues: true, recebidos: true }} pedidos={pedidos} />}
+              {blocosAtivos.includes('compras')     && <CardCompras     ini={ini} fim={fim} compras={compras} />}
+              {blocosAtivos.includes('folha')       && <CardFolha       ini={ini} fim={fim} pagamentos={pagamentos} custosPessoal={custosPessoal} />}
+              {blocosAtivos.includes('custosFixos') && <CardCustosFixos ini={ini} fim={fim} registros={custosFixosRegistros} />}
+              {blocosAtivos.includes('parcelas')    && <CardParcelas    ini={ini} fim={fim} parcelas={parcelas} />}
+              {blocosAtivos.length >= 2             && <ResumoConsolidado blocos={blocosAtivos} ini={ini} fim={fim} pedidos={pedidos} compras={compras} pagamentos={pagamentos} custosPessoal={custosPessoal} custosFixosRegistros={custosFixosRegistros} parcelas={parcelas} />}
             </>
         }
       </div>

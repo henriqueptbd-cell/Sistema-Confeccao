@@ -19,6 +19,7 @@ export default function Login() {
     try {
       const resultado = await login(email, senha)
       if (resultado.ok) {
+        sessionStorage.setItem('token', resultado.token)
         sessionStorage.setItem('usuario', JSON.stringify(resultado.usuario))
         navigate('/dashboard')
       } else {

@@ -1,6 +1,7 @@
-const express = require('express');
-const router  = express.Router();
-const pool    = require('../db');
+const express    = require('express');
+const router     = express.Router();
+const pool       = require('../db');
+const auditoria  = require('../auditoria');
 
 function rowToCliente(r) {
   return {
@@ -27,6 +28,7 @@ function rowToCliente(r) {
 
 router.get('/', async (req, res) => {
   const q = (req.query.q || '').trim().toLowerCase();
+  auditoria.registrar(req, q ? 'buscar_clientes' : 'listar_clientes', 'cliente');
   try {
     let rows;
     if (q) {
@@ -53,6 +55,7 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
+  auditoria.registrar(req, 'ver_cliente', 'cliente', req.params.id);
   try {
     const { rows } = await pool.query('SELECT * FROM clientes WHERE id = $1', [req.params.id]);
     if (rows.length === 0) return res.status(404).json({ mensagem: 'Cliente não encontrado.' });
@@ -66,6 +69,7 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   const b = req.body;
   const hoje = new Date().toLocaleDateString('pt-BR');
+  auditoria.registrar(req, 'criar_cliente', 'cliente');
   try {
     const { rows } = await pool.query(
       `INSERT INTO clientes
@@ -85,6 +89,7 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   const b = req.body;
+  auditoria.registrar(req, 'editar_cliente', 'cliente', req.params.id);
   try {
     const { rows } = await pool.query(
       `UPDATE clientes SET
@@ -105,6 +110,7 @@ router.put('/:id', async (req, res) => {
 });
 
 router.delete('/:id', async (req, res) => {
+  auditoria.registrar(req, 'excluir_cliente', 'cliente', req.params.id);
   try {
     const { rows } = await pool.query(
       'SELECT id FROM pedidos WHERE cliente_id = $1 LIMIT 1', [req.params.id]

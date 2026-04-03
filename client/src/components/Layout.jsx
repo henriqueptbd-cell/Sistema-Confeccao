@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+
+const IDLE_TIMEOUT = 30 * 60 * 1000 // 30 minutos sem interação
 
 export default function Layout() {
   const navigate  = useNavigate()
@@ -8,9 +10,27 @@ export default function Layout() {
   const [menuAberto, setMenuAberto] = useState(false)
 
   function sair() {
+    sessionStorage.removeItem('token')
     sessionStorage.removeItem('usuario')
-    navigate('/login')
+    navigate('/login', { replace: true })
   }
+
+  useEffect(() => {
+    let timer = setTimeout(sair, IDLE_TIMEOUT)
+
+    const resetar = () => {
+      clearTimeout(timer)
+      timer = setTimeout(sair, IDLE_TIMEOUT)
+    }
+
+    const eventos = ['mousemove', 'keydown', 'click', 'touchstart', 'scroll']
+    eventos.forEach(e => window.addEventListener(e, resetar))
+
+    return () => {
+      clearTimeout(timer)
+      eventos.forEach(e => window.removeEventListener(e, resetar))
+    }
+  }, [])  // eslint-disable-line react-hooks/exhaustive-deps
 
   const navClass = ({ isActive }) => `nav-item${isActive ? ' active' : ''}`
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import {
   buscarConfigPrecos, salvarConfigPrecos,
-  listarUsuarios, criarUsuario, atualizarUsuario, excluirUsuario, verSenhaUsuario,
+  listarUsuarios, criarUsuario, atualizarUsuario, excluirUsuario,
 } from '../api'
 import { formatarMoeda } from '../utils/config'
 

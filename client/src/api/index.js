@@ -1,8 +1,24 @@
 // Camada de acesso à API REST do backend.
 // Todas as funções retornam o JSON parseado ou lançam um Error.
 
+function getToken() {
+  return sessionStorage.getItem('token')
+}
+
 async function req(url, opts = {}) {
-  const res = await fetch(url, opts)
+  const token = getToken()
+  const headers = { ...(opts.headers || {}) }
+  if (token) headers['Authorization'] = `Bearer ${token}`
+
+  const res = await fetch(url, { ...opts, headers })
+
+  if (res.status === 401) {
+    sessionStorage.removeItem('token')
+    sessionStorage.removeItem('usuario')
+    window.location.href = '/login'
+    return
+  }
+
   if (!res.ok) {
     const err = await res.json().catch(() => ({}))
     throw new Error(err.mensagem || `Erro HTTP ${res.status}`)
@@ -62,7 +78,6 @@ export const listarUsuarios     = ()         => req('/api/usuarios')
 export const criarUsuario       = (dados)    => req('/api/usuarios', json('POST', dados))
 export const atualizarUsuario   = (id, dados) => req(`/api/usuarios/${id}`, json('PUT', dados))
 export const excluirUsuario     = (id)       => req(`/api/usuarios/${id}`, { method: 'DELETE' })
-export const verSenhaUsuario    = (id)       => req(`/api/usuarios/${id}/senha`)
 
 // ── Categorias de despesa ────────────────────────────────────────────────────
 

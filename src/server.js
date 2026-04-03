@@ -7,7 +7,9 @@ dotenv.config({ quiet: true });
 const app = express();
 const PORT = process.env.PORT || 3004;
 
+app.use(require('helmet')({ contentSecurityPolicy: false }));
 app.use(express.json());
+app.use(require('./middleware/auth'));
 
 app.use('/api/auth',         require('./routes/auth'));
 app.use('/api/pedidos',     require('./routes/pedidos'));

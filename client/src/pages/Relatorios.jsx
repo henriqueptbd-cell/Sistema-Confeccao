@@ -277,7 +277,7 @@ export default function Relatorios() {
       setPedidos(lista.map(p => ({
         ...p,
         valor: (p.pecas || []).reduce((s, peca) => {
-          const qtd = peca.tipo === 'Bandeira'
+          const qtd = (peca.tipo === 'Bandeira' || peca.tipo === 'Serviço avulso')
             ? (peca.quantidade || 1)
             : Object.values(peca.tamanhos || {}).reduce((a, v) => a + v, 0)
           return s + (peca.valorUnitario || 0) * qtd

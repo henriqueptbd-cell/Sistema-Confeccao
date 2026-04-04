@@ -21,6 +21,9 @@ function tamanhosVazios() {
 }
 
 function pecaVazia(tipo = 'Camiseta') {
+  if (tipo === 'Serviço avulso') {
+    return { tipo, modelo: '', observacoes: '', quantidade: 1, valorUnitario: 0, tamanhos: {}, desconto: 0, imagemLink: '' }
+  }
   return {
     tipo,
     modelo:           tipo === 'Camiseta' ? 'Manga curta' : tipo === 'Short' ? 'Jet masculino' : tipo === 'Corta-vento' ? 'Com toca' : '',
@@ -151,7 +154,7 @@ function FormPeca({ peca, index, config, onChange, onRemover }) {
     if (campo === 'material' && valor !== 'Dry' && nova.gola === 'Polo esportiva') {
       nova.gola = 'Gola redonda'
     }
-    if (config) {
+    if (config && nova.tipo !== 'Serviço avulso') {
       const { precoCalculado } = calcularPrecoPeca(nova, config)
       const desc = Math.min(nova.desconto || 0, config.descontoMaximo || 0)
       nova.valorUnitario = precoCalculado * (1 - desc / 100)
@@ -173,7 +176,7 @@ function FormPeca({ peca, index, config, onChange, onRemover }) {
       {/* Tipo + remover */}
       <div className="produto-card-header">
         <div className="tipo-pills">
-          {['Camiseta', 'Short', 'Corta-vento', 'Bandeira'].map(t => (
+          {['Camiseta', 'Short', 'Corta-vento', 'Bandeira', 'Serviço avulso'].map(t => (
             <button
               key={t}
               type="button"
@@ -293,26 +296,86 @@ function FormPeca({ peca, index, config, onChange, onRemover }) {
         </div>
       )}
 
-      {/* ── Estampa ── */}
-      <div className="estampa-section">
-        <label className="field-label">Estampa</label>
-        <PillGroup options={ESTAMPA_TIPOS} value={peca.estampaTipo} onChange={v => set('estampaTipo', v)} />
-        {peca.estampaTipo === 'Personalizado' && (
-          <div className="estampa-cond" style={{ marginTop: 10 }}>
-            <label className="field-label">Descrição e posicionamento</label>
+      {/* ── Serviço avulso ── */}
+      {peca.tipo === 'Serviço avulso' && (
+        <div className="tipo-section">
+          <div style={{ marginBottom: 12 }}>
+            <label className="field-label">Descrição do serviço *</label>
+            <input
+              type="text"
+              className="field-input"
+              placeholder="Ex: Impressão, Corte de tecido, Bordado..."
+              value={peca.modelo || ''}
+              onChange={e => set('modelo', e.target.value)}
+            />
+          </div>
+          <div className="opcao-row-2">
+            <div>
+              <label className="field-label">Quantidade *</label>
+              <input
+                type="number"
+                className="field-input"
+                min="1"
+                value={peca.quantidade || 1}
+                onChange={e => set('quantidade', parseInt(e.target.value) || 1)}
+              />
+            </div>
+            <div>
+              <label className="field-label">Valor unitário (R$) *</label>
+              <input
+                type="number"
+                className="field-input"
+                min="0"
+                step="0.01"
+                placeholder="0,00"
+                value={peca.valorUnitario || ''}
+                onChange={e => set('valorUnitario', parseFloat(e.target.value) || 0)}
+              />
+            </div>
+          </div>
+          <div style={{ marginTop: 8 }}>
+            <label className="field-label">Observações</label>
             <textarea
               className="field-input campo-textarea"
               rows="2"
-              placeholder="ex: Frente e costas, estampa no braço esquerdo…"
-              value={peca.estampaDescricao || ''}
-              onChange={e => set('estampaDescricao', e.target.value)}
+              placeholder="Detalhes adicionais..."
+              value={peca.observacoes || ''}
+              onChange={e => set('observacoes', e.target.value)}
             />
           </div>
-        )}
-      </div>
+          <div className="preco-display" style={{ marginTop: 12 }}>
+            <div className="preco-breakdown">
+              <div className="preco-linha preco-card-total">
+                <span>{peca.quantidade || 1} {(peca.quantidade || 1) === 1 ? 'unidade' : 'unidades'}</span>
+                <span>{formatarMoeda((peca.valorUnitario || 0) * (peca.quantidade || 1))}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Estampa ── */}
+      {peca.tipo !== 'Serviço avulso' && (
+        <div className="estampa-section">
+          <label className="field-label">Estampa</label>
+          <PillGroup options={ESTAMPA_TIPOS} value={peca.estampaTipo} onChange={v => set('estampaTipo', v)} />
+          {peca.estampaTipo === 'Personalizado' && (
+            <div className="estampa-cond" style={{ marginTop: 10 }}>
+              <label className="field-label">Descrição e posicionamento</label>
+              <textarea
+                className="field-input campo-textarea"
+                rows="2"
+                placeholder="ex: Frente e costas, estampa no braço esquerdo…"
+                value={peca.estampaDescricao || ''}
+                onChange={e => set('estampaDescricao', e.target.value)}
+              />
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ── Tamanhos ── */}
-      <div className="tamanhos-section">
+      {peca.tipo !== 'Serviço avulso' && (<div className="tamanhos-section">
         <label className="field-label">Tamanhos e quantidades</label>
         {peca.tipo !== 'Bandeira' ? (
           <>
@@ -345,25 +408,27 @@ function FormPeca({ peca, index, config, onChange, onRemover }) {
             />
           </div>
         )}
-      </div>
+      </div>)}
 
       {/* ── Preço ── */}
-      <div className="preco-section">
-        <PrecoDisplay peca={peca} config={config} />
-        <div className="produto-desconto-wrap" style={{ marginTop: 10 }}>
-          <label className="field-label">Desconto (%)</label>
-          <input
-            type="number"
-            className={`field-input preco-desconto-input${(peca.desconto || 0) > (config?.descontoMaximo || 0) ? ' campo-erro' : ''}`}
-            min="0"
-            max="100"
-            step="1"
-            placeholder="0"
-            value={peca.desconto || ''}
-            onChange={e => set('desconto', parseFloat(e.target.value) || 0)}
-          />
+      {peca.tipo !== 'Serviço avulso' && (
+        <div className="preco-section">
+          <PrecoDisplay peca={peca} config={config} />
+          <div className="produto-desconto-wrap" style={{ marginTop: 10 }}>
+            <label className="field-label">Desconto (%)</label>
+            <input
+              type="number"
+              className={`field-input preco-desconto-input${(peca.desconto || 0) > (config?.descontoMaximo || 0) ? ' campo-erro' : ''}`}
+              min="0"
+              max="100"
+              step="1"
+              placeholder="0"
+              value={peca.desconto || ''}
+              onChange={e => set('desconto', parseFloat(e.target.value) || 0)}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ── Link ── */}
       <div className="produto-footer">
@@ -424,6 +489,9 @@ export default function ModalNovoPedido({ configPrecos, onSalvar, onFechar }) {
     const prazoFormatado = new Date(prazoISO + 'T12:00:00').toLocaleDateString('pt-BR')
 
     const pecasFinais = pecas.map(p => {
+      if (p.tipo === 'Serviço avulso') {
+        return { ...p, precoCalculado: p.valorUnitario, descontoPercentual: 0 }
+      }
       const { precoCalculado } = configPrecos ? calcularPrecoPeca(p, configPrecos) : { precoCalculado: 0 }
       const desc = Math.min(p.desconto || 0, configPrecos?.descontoMaximo || 0)
       const precoFinal = precoCalculado * (1 - desc / 100)
@@ -445,6 +513,9 @@ export default function ModalNovoPedido({ configPrecos, onSalvar, onFechar }) {
   }
 
   const totalGeral = pecas.reduce((acc, p) => {
+    if (p.tipo === 'Serviço avulso') {
+      return acc + (p.valorUnitario || 0) * (p.quantidade || 1)
+    }
     const { precoCalculado } = configPrecos ? calcularPrecoPeca(p, configPrecos) : { precoCalculado: 0 }
     const desc = Math.min(p.desconto || 0, configPrecos?.descontoMaximo || 0)
     const qtd  = p.tipo === 'Bandeira'

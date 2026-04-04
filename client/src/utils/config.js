@@ -46,9 +46,9 @@ export function isProximoPrazo(pedido) {
 export function totalPedido(pedido) {
   return pedido.pecas.reduce((acc, p) => {
     if (p.tipo) {
-      const qtd = p.tamanhos
-        ? Object.values(p.tamanhos).reduce((s, v) => s + v, 0)
-        : (p.quantidade || 1)
+      const qtd = (p.tipo === 'Bandeira' || p.tipo === 'Serviço avulso')
+        ? (p.quantidade || 1)
+        : Object.values(p.tamanhos || {}).reduce((s, v) => s + v, 0)
       return acc + (p.valorUnitario || 0) * qtd
     }
     return acc + (p.valor || 0)

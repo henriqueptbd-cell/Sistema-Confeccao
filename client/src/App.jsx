@@ -7,7 +7,7 @@ import DetalhePedido from './pages/DetalhePedido'
 import ConsultaPublica from './pages/ConsultaPublica'
 import Clientes from './pages/Clientes'
 import Configuracoes from './pages/Configuracoes'
-import Financeiro from './pages/Financeiro'
+import Financeiro from './pages/financeiro'
 import Relatorios from './pages/Relatorios'
 
 export default function App() {

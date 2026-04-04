@@ -60,9 +60,61 @@ async function buscarPedidoCompleto(id, client) {
 
 router.get('/', async (req, res) => {
   try {
-    const { rows } = await pool.query('SELECT * FROM pedidos ORDER BY id DESC');
-    const pedidos  = await Promise.all(rows.map(p => buscarPedidoCompleto(p.id)));
-    res.json(pedidos);
+    const { rows: pedidos } = await pool.query('SELECT * FROM pedidos ORDER BY id DESC');
+
+    if (pedidos.length === 0) return res.json([]);
+
+    const ids = pedidos.map(p => p.id);
+    const { rows: pecas }  = await pool.query('SELECT * FROM pedido_pecas  WHERE pedido_id = ANY($1) ORDER BY id',     [ids]);
+    const { rows: etapas } = await pool.query('SELECT * FROM pedido_etapas WHERE pedido_id = ANY($1) ORDER BY ordem',  [ids]);
+
+    const pecasPorPedido  = {};
+    const etapasPorPedido = {};
+    for (const r of pecas)  (pecasPorPedido[r.pedido_id]  ||= []).push(r);
+    for (const e of etapas) (etapasPorPedido[e.pedido_id] ||= []).push(e);
+
+    const resultado = pedidos.map(p => ({
+      id:          p.id,
+      clienteId:   p.cliente_id,
+      cliente:     p.cliente,
+      telefone:    p.telefone,
+      prazo:       p.prazo,
+      prazoISO:    p.prazo_iso,
+      dataEntrada: p.data_entrada,
+      status:      p.status,
+      entregueEm:  p.entregue_em,
+      pecas: (pecasPorPedido[p.id] || []).map(r => ({
+        id:                 r.id,
+        tipo:               r.tipo,
+        modelo:             r.modelo,
+        material:           r.material,
+        estampaTipo:        r.estampa_tipo,
+        estampaDescricao:   r.estampa_descricao,
+        gola:               r.gola,
+        punho:              r.punho,
+        capuz:              r.capuz,
+        dedao:              r.dedao,
+        bolsoZiper:         r.bolso_ziper,
+        faces:              r.faces,
+        medidas:            r.medidas,
+        observacoes:        r.observacoes,
+        desconto:           parseFloat(r.desconto),
+        imagemLink:         r.imagem_link,
+        tamanhos:           r.tamanhos || {},
+        quantidade:         r.quantidade,
+        valorUnitario:      parseFloat(r.valor_unitario),
+        precoCalculado:     parseFloat(r.preco_calculado),
+        descontoPercentual: parseFloat(r.desconto_percentual),
+      })),
+      etapas: (etapasPorPedido[p.id] || []).map(e => ({
+        ordem:       e.ordem,
+        nome:        e.nome,
+        concluida:   e.concluida,
+        concluidaEm: e.concluida_em,
+      })),
+    }));
+
+    res.json(resultado);
   } catch (e) {
     console.error(e);
     res.status(500).json({ mensagem: 'Erro interno.' });

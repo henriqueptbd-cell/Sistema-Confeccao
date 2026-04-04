@@ -42,9 +42,11 @@ export default function Layout() {
       <NavLink to="/clientes"     className={navClass} onClick={() => setMenuAberto(false)}>
         <span className="nav-icon">👥</span> Clientes
       </NavLink>
-      <NavLink to="/relatorios"   className={navClass} onClick={() => setMenuAberto(false)}>
-        <span className="nav-icon">📊</span> Relatórios
-      </NavLink>
+      {isAdmin && (
+        <NavLink to="/relatorios" className={navClass} onClick={() => setMenuAberto(false)}>
+          <span className="nav-icon">📊</span> Relatórios
+        </NavLink>
+      )}
       {isAdmin && (
         <NavLink to="/financeiro" className={navClass} onClick={() => setMenuAberto(false)}>
           <span className="nav-icon">💰</span> Financeiro

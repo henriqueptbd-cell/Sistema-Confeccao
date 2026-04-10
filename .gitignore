@@ -1,4 +1,5 @@
 arquivosConfidenciais
+data/db.json
 node_modules
 .env
 dist/

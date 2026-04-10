@@ -6,6 +6,7 @@ import {
   TAM_ADULTO_MASC, TAM_ADULTO_FEM, TAM_INFANTIL,
 } from '../utils/config'
 import ModalCliente from './ModalCliente'
+import ModalOrcamento from './ModalOrcamento'
 
 const MODELOS_CAMISETA   = ['Manga curta', 'Manga longa', 'Regata']
 const MODELOS_SHORT      = ['Jet masculino', 'Jet feminino', 'Futebol']
@@ -499,8 +500,9 @@ export default function ModalNovoPedido({ configPrecos, onSalvar, onFechar }) {
   const [clienteSel,   setClienteSel]   = useState(null)
   const [prazoISO,     setPrazoISO]     = useState('')
   const [pecas,        setPecas]        = useState([pecaVazia()])
-  const [salvando,     setSalvando]     = useState(false)
-  const [modalCliente, setModalCliente] = useState(false)
+  const [salvando,      setSalvando]      = useState(false)
+  const [modalCliente,  setModalCliente]  = useState(false)
+  const [modalOrcamento, setModalOrcamento] = useState(null)
   const debounceRef = useRef(null)
 
   useEffect(() => {
@@ -557,6 +559,31 @@ export default function ModalNovoPedido({ configPrecos, onSalvar, onFechar }) {
     setSalvando(true)
     try { await onSalvar(dados) }
     finally { setSalvando(false) }
+  }
+
+  function gerarOrcamento() {
+    if (!clienteSel)        { alert('Selecione um cliente.'); return }
+    if (!prazoISO)          { alert('Informe o prazo de entrega.'); return }
+    if (pecas.length === 0) { alert('Adicione ao menos uma peça.'); return }
+
+    const prazoFormatado = new Date(prazoISO + 'T12:00:00').toLocaleDateString('pt-BR')
+
+    const pecasFinais = pecas.map(p => {
+      if (p.tipo === 'Serviço avulso' || p.tipo === 'Bandeira') {
+        return { ...p, precoCalculado: p.valorUnitario, descontoPercentual: 0 }
+      }
+      const { precoCalculado } = configPrecos ? calcularPrecoPeca(p, configPrecos) : { precoCalculado: 0 }
+      const desc = Math.min(p.desconto || 0, configPrecos?.descontoMaximo || 0)
+      const precoFinal = precoCalculado * (1 - desc / 100)
+      return { ...p, precoCalculado, descontoPercentual: desc, valorUnitario: precoFinal }
+    })
+
+    setModalOrcamento({
+      cliente:  nomeDisplayCliente(clienteSel),
+      telefone: clienteSel.telefone || '',
+      prazo:    prazoFormatado,
+      pecas:    pecasFinais,
+    })
   }
 
   const totalGeral = pecas.reduce((acc, p) => {
@@ -676,8 +703,8 @@ export default function ModalNovoPedido({ configPrecos, onSalvar, onFechar }) {
 
           <div className="modal-form-actions">
             <button className="modal-btn modal-btn-cancel" onClick={onFechar} disabled={salvando}>Cancelar</button>
-            <button className="modal-btn modal-btn-secondary" onClick={() => salvar('orcamento')} disabled={salvando}>
-              {salvando ? 'Salvando...' : 'Salvar orçamento'}
+            <button className="modal-btn modal-btn-secondary" onClick={gerarOrcamento} disabled={salvando}>
+              Gerar orçamento
             </button>
             <button className="modal-btn modal-btn-confirm" onClick={() => salvar('producao')} disabled={salvando}>
               {salvando ? 'Salvando...' : 'Salvar pedido'}
@@ -686,6 +713,13 @@ export default function ModalNovoPedido({ configPrecos, onSalvar, onFechar }) {
 
         </div>
       </div>
+
+      {modalOrcamento && (
+        <ModalOrcamento
+          dados={modalOrcamento}
+          onFechar={() => setModalOrcamento(null)}
+        />
+      )}
 
       {modalCliente && (
         <ModalCliente

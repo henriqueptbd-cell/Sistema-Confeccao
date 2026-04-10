@@ -937,3 +937,17 @@ tbody td {
   .size-row             { gap: 4px; }
   .size-input           { width: 40px; }
 }
+
+/* ── Impressão do orçamento ─────────────────────────────────────────────────── */
+@media print {
+  body > *:not(.orc-print-root) { display: none !important; }
+  .modal-overlay,
+  .modal-form-actions,
+  .modal-form-header { display: none !important; }
+  .orc-preview {
+    display: block !important;
+    padding: 0;
+    box-shadow: none;
+    border: none;
+  }
+}

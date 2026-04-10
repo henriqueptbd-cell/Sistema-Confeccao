@@ -284,6 +284,21 @@ export default function Compras({ mes, ano, onDados }) {
               </div>
             )}
 
+            {form.id && form.dataPagamento && (
+              <div style={{ marginBottom: 16, padding: '10px 14px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: 13, color: '#16a34a' }}>
+                  Baixa dada em: <strong>{form.dataPagamento}</strong>
+                </span>
+                <button
+                  type="button"
+                  style={{ fontSize: 12, color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}
+                  onClick={() => setForm(f => ({ ...f, dataPagamento: null }))}
+                >
+                  Desfazer baixa
+                </button>
+              </div>
+            )}
+
             <div style={{ marginBottom: 16 }}>
               <label className="field-label">Observações</label>
               <textarea className="field-input campo-textarea" value={form.observacoes || ''} onChange={e => setForm(f => ({ ...f, observacoes: e.target.value }))} />

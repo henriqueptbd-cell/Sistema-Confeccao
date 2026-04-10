@@ -10,7 +10,8 @@ const COMPRA_VAZIA = {
 }
 
 function statusPagamento(c) {
-  if (c.formaPagamento === 'a_vista' || c.dataPagamento) return 'pago'
+  if (c.formaPagamento === 'a_vista') return 'a_vista'
+  if (c.dataPagamento) return 'pago'
   if (c.dataVencimento) {
     const venc = new Date(c.dataVencimento + 'T00:00:00')
     const hoje = new Date(); hoje.setHours(0, 0, 0, 0)
@@ -23,11 +24,12 @@ function statusPagamento(c) {
 
 function BadgeStatus({ compra }) {
   const st = statusPagamento(compra)
+  if (st === 'a_vista') return null  // à vista não precisa de badge
   const map = {
-    pago:          { label: 'Pago',           color: '#16a34a', bg: '#dcfce7' },
-    pendente:      { label: 'Pendente',        color: '#92400e', bg: '#fef3c7' },
-    vence_em_breve:{ label: `Vence em breve`,  color: '#b45309', bg: '#fef3c7' },
-    vencido:       { label: 'Vencido',         color: '#dc2626', bg: '#fee2e2' },
+    pago:           { label: 'Pago',          color: '#16a34a', bg: '#dcfce7' },
+    pendente:       { label: 'Pendente',       color: '#92400e', bg: '#fef3c7' },
+    vence_em_breve: { label: 'Vence em breve', color: '#b45309', bg: '#fef3c7' },
+    vencido:        { label: 'Vencido',        color: '#dc2626', bg: '#fee2e2' },
   }
   const { label, color, bg } = map[st]
   return (
@@ -95,7 +97,14 @@ export default function Compras({ mes, ano, onDados }) {
 
   const comprasFiltradas = compras
     .filter(c => !filterTipo || c.tipo === filterTipo)
-    .filter(c => !filterPgto || statusPagamento(c) === filterPgto)
+    .filter(c => {
+      if (!filterPgto) return true
+      const st = statusPagamento(c)
+      if (filterPgto === 'faturado_aberto') return st === 'pendente' || st === 'vence_em_breve'
+      if (filterPgto === 'vencido')         return st === 'vencido'
+      if (filterPgto === 'pago')            return st === 'pago' || st === 'a_vista'
+      return true
+    })
     .filter(c => !buscaCompra ||
       (c.material || '').toLowerCase().includes(buscaCompra.toLowerCase()) ||
       (c.fornecedor || '').toLowerCase().includes(buscaCompra.toLowerCase())
@@ -108,7 +117,7 @@ export default function Compras({ mes, ano, onDados }) {
   }, {})
 
   const totalPendente = compras
-    .filter(c => statusPagamento(c) !== 'pago')
+    .filter(c => { const st = statusPagamento(c); return st === 'pendente' || st === 'vence_em_breve' || st === 'vencido' })
     .reduce((s, c) => s + c.valorTotal, 0)
 
   return (
@@ -134,9 +143,9 @@ export default function Compras({ mes, ano, onDados }) {
         <label style={{ fontWeight: 600, fontSize: 12 }}>Pagamento:</label>
         <select className="field-input campo-select" style={{ width: 160 }} value={filterPgto || ''} onChange={e => setFilterPgto(e.target.value)}>
           <option value="">Todos</option>
-          <option value="pendente">Pendentes</option>
+          <option value="faturado_aberto">Faturadas em aberto</option>
           <option value="vencido">Vencidas</option>
-          <option value="pago">Pagas</option>
+          <option value="pago">Pagas / À vista</option>
         </select>
         <input
           type="text"
@@ -166,7 +175,7 @@ export default function Compras({ mes, ano, onDados }) {
         </div>
       )}
 
-      <div className="table-card">
+      <div className="table-card" style={{ overflowX: 'auto' }}>
         <table>
           <thead>
             <tr>
@@ -176,14 +185,13 @@ export default function Compras({ mes, ano, onDados }) {
               <th>Qtd.</th>
               <th>Fornecedor</th>
               <th>Valor total</th>
-              <th>Vencimento</th>
-              <th>Status</th>
+              <th>Pagamento</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
             {comprasFiltradas.length === 0 ? (
-              <tr><td colSpan={9} className="tabela-vazia">{filterTipo || filterPgto || buscaCompra ? 'Nenhuma compra encontrada com esses filtros.' : 'Nenhuma compra registrada neste período.'}</td></tr>
+              <tr><td colSpan={8} className="tabela-vazia">{filterTipo || filterPgto || buscaCompra ? 'Nenhuma compra encontrada com esses filtros.' : 'Nenhuma compra registrada neste período.'}</td></tr>
             ) : comprasFiltradas.map(c => (
               <tr key={c.id}>
                 <td>{formatarData(c.dataCompra)}</td>
@@ -192,13 +200,18 @@ export default function Compras({ mes, ano, onDados }) {
                 <td><span style={{ fontWeight: 600 }}>{c.quantidade}</span> <span style={{ fontSize: 11, color: '#8a8a8e' }}>{c.unidade}</span></td>
                 <td>{c.fornecedor || <span style={{ color: '#ccc' }}>—</span>}</td>
                 <td style={{ fontWeight: 700, color: '#e84c3d' }}>{formatarMoeda(c.valorTotal)}</td>
-                <td style={{ fontSize: 12, color: '#666' }}>
-                  {c.formaPagamento === 'faturado' && c.dataVencimento
-                    ? formatarData(c.dataVencimento)
-                    : <span style={{ color: '#ccc' }}>—</span>}
-                </td>
-                <td><BadgeStatus compra={c} /></td>
                 <td>
+                  {c.formaPagamento === 'a_vista'
+                    ? <span style={{ fontSize: 11, color: '#8a8a8e' }}>À vista</span>
+                    : <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                        <BadgeStatus compra={c} />
+                        {c.dataVencimento && !c.dataPagamento && (
+                          <span style={{ fontSize: 11, color: '#8a8a8e' }}>Vence {formatarData(c.dataVencimento)}</span>
+                        )}
+                      </div>
+                  }
+                </td>
+                <td style={{ whiteSpace: 'nowrap' }}>
                   <button className="btn-acao btn-editar" onClick={() => setForm({ ...c })}>Editar</button>
                   {c.formaPagamento === 'faturado' && !c.dataPagamento && (
                     <button className="btn-acao" style={{ background: '#dcfce7', color: '#16a34a', border: '1px solid #bbf7d0' }} onClick={() => handleBaixa(c.id)}>Dar baixa</button>

@@ -10,6 +10,9 @@
 |---|---|---|
 | v1 | — | Schema inicial — tabelas principais, enums, trigger de etapas, lookup público por inteiro sequencial |
 | v2 | 2026-03-30 | 🔄 Adicionados campos de pagamento e entrega na tabela `pedidos`: `pagamento_status`, `entrega_status`, `data_entrega`, `data_pagamento`. Tipo de entrega não é registrado no sistema nesta versão — previsto para versão futura. |
+| v3 | 2026-04-10 | ⚠️ Seção de pagamento **supersedida** por `pagamentos.md`. Ver nota abaixo. |
+
+> **⚠️ Atenção — Pagamentos (v3):** O módulo de pagamentos foi redesenhado. As alterações desta seção relativas a `pagamento_status` e `data_pagamento` foram **substituídas** pelo documento `pagamentos.md`, que é agora a referência autoritativa. Resumo das mudanças: (1) `data_pagamento` removida da tabela `pedidos` — a data passa a ficar em `pagamentos.data_pagamento`; (2) `pagamento_status` deixa de ser enum e passa a ser `VARCHAR(20)` com CHECK incluindo o novo status `'parcial'`; (3) nova tabela `pagamentos` com histórico de recebimentos; (4) novo trigger `fn_atualizar_pagamento_status` substitui a lógica de pagamento do trigger `fn_preencher_datas_pedido`. O trigger de entrega (`data_entrega`) permanece inalterado.
 
 ---
 

@@ -33,6 +33,7 @@ async function buscarPedidoCompleto(id, client) {
       material:           r.material,
       estampaTipo:        r.estampa_tipo,
       estampaDescricao:   r.estampa_descricao,
+      estampaCor:         r.estampa_cor,
       gola:               r.gola,
       punho:              r.punho,
       capuz:              r.capuz,
@@ -90,6 +91,7 @@ router.get('/', async (req, res) => {
         material:           r.material,
         estampaTipo:        r.estampa_tipo,
         estampaDescricao:   r.estampa_descricao,
+        estampaCor:         r.estampa_cor,
         gola:               r.gola,
         punho:              r.punho,
         capuz:              r.capuz,
@@ -133,7 +135,9 @@ router.get('/:id', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-  const { clienteId, cliente, telefone, prazo, prazoISO, pecas = [] } = req.body;
+  const { clienteId, cliente, telefone, prazo, prazoISO, pecas = [], tipoSalvar } = req.body;
+  const isOrcamento = tipoSalvar === 'orcamento';
+  const statusInicial = isOrcamento ? 'orcamento' : 'producao';
   const hoje = new Date().toLocaleDateString('pt-BR');
   const client = await pool.connect();
   try {
@@ -141,19 +145,20 @@ router.post('/', async (req, res) => {
 
     const { rows: [p] } = await client.query(
       `INSERT INTO pedidos (cliente_id, cliente, telefone, prazo, prazo_iso, data_entrada, status)
-       VALUES ($1,$2,$3,$4,$5,$6,'producao') RETURNING id`,
-      [clienteId || null, cliente, telefone, prazo, prazoISO, hoje]
+       VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id`,
+      [clienteId || null, cliente, telefone, prazo, prazoISO, hoje, statusInicial]
     );
     const pedidoId = p.id;
 
     for (const peca of pecas) {
       await client.query(
         `INSERT INTO pedido_pecas
-          (pedido_id, tipo, modelo, material, estampa_tipo, estampa_descricao, gola, punho, capuz,
-           dedao, bolso_ziper, faces, medidas, observacoes, desconto, imagem_link,
-           tamanhos, quantidade, valor_unitario, preco_calculado, desconto_percentual)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21)`,
+          (pedido_id, tipo, modelo, material, estampa_tipo, estampa_descricao, estampa_cor,
+           gola, punho, capuz, dedao, bolso_ziper, faces, medidas, observacoes, desconto,
+           imagem_link, tamanhos, quantidade, valor_unitario, preco_calculado, desconto_percentual)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22)`,
         [pedidoId, peca.tipo, peca.modelo, peca.material, peca.estampaTipo, peca.estampaDescricao,
+         peca.estampaCor || null,
          peca.gola, peca.punho, peca.capuz, !!peca.dedao, !!peca.bolsoZiper, peca.faces,
          peca.medidas, peca.observacoes, peca.desconto || 0, peca.imagemLink,
          JSON.stringify(peca.tamanhos || {}), peca.quantidade || 1,
@@ -161,10 +166,11 @@ router.post('/', async (req, res) => {
       );
     }
 
+    // Orçamento: nenhuma etapa marcada como concluída ainda
     const etapas = NOMES_ETAPAS.map((nome, i) => ({
       ordem: i + 1, nome,
-      concluida: i === 0,
-      concluidaEm: i === 0 ? hoje : null,
+      concluida: isOrcamento ? false : i === 0,
+      concluidaEm: isOrcamento ? null : (i === 0 ? hoje : null),
     }));
 
     for (const e of etapas) {

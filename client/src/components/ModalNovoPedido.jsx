@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { buscarClientes } from '../api'
 import {
   calcularPrecoPeca, nomeDisplayCliente, formatarMoeda,
-  MATERIAIS_CAMISETA, ESTAMPA_TIPOS,
+  MATERIAIS_CAMISETA, MATERIAIS_BANDEIRA, ESTAMPA_TIPOS,
   TAM_ADULTO_MASC, TAM_ADULTO_FEM, TAM_INFANTIL,
 } from '../utils/config'
 import ModalCliente from './ModalCliente'
@@ -154,7 +154,7 @@ function FormPeca({ peca, index, config, onChange, onRemover }) {
     if (campo === 'material' && valor !== 'Dry' && nova.gola === 'Polo esportiva') {
       nova.gola = 'Gola redonda'
     }
-    if (config && nova.tipo !== 'Serviço avulso') {
+    if (config && nova.tipo !== 'Serviço avulso' && nova.tipo !== 'Bandeira') {
       const { precoCalculado } = calcularPrecoPeca(nova, config)
       const desc = Math.min(nova.desconto || 0, config.descontoMaximo || 0)
       nova.valorUnitario = precoCalculado * (1 - desc / 100)
@@ -221,7 +221,11 @@ function FormPeca({ peca, index, config, onChange, onRemover }) {
               </div>
               <div className="opcao-group">
                 <label className="field-label">Capuz / Balaclava</label>
-                <PillGroup options={CAPUZ_OPTS} value={peca.capuz} onChange={v => set('capuz', v)} />
+                <PillGroup
+                  options={peca.material === 'Confort UV50' ? CAPUZ_OPTS.filter(c => c !== 'Capuz ninja') : CAPUZ_OPTS}
+                  value={peca.capuz}
+                  onChange={v => set('capuz', v)}
+                />
               </div>
               <div className="opcao-group">
                 <label className="field-label field-checkbox">
@@ -265,11 +269,11 @@ function FormPeca({ peca, index, config, onChange, onRemover }) {
         <div className="tipo-section">
           <div className="opcao-group">
             <label className="field-label">Material</label>
-            <PillGroup options={MATERIAIS_CAMISETA} value={peca.material} onChange={v => set('material', v)} />
+            <PillGroup options={MATERIAIS_BANDEIRA} value={peca.material} onChange={v => set('material', v)} />
           </div>
           <div className="opcao-row-2">
             <div>
-              <label className="field-label">Medidas (máx. 90×70cm)</label>
+              <label className="field-label">Medidas</label>
               <input
                 type="text"
                 className="field-input"
@@ -283,6 +287,30 @@ function FormPeca({ peca, index, config, onChange, onRemover }) {
               <PillGroup options={FACES_OPTS} value={peca.faces} onChange={v => set('faces', v)} />
             </div>
           </div>
+          <div className="opcao-row-2">
+            <div>
+              <label className="field-label">Quantidade *</label>
+              <input
+                type="number"
+                className="field-input"
+                min="1"
+                value={peca.quantidade || 1}
+                onChange={e => set('quantidade', parseInt(e.target.value) || 1)}
+              />
+            </div>
+            <div>
+              <label className="field-label">Valor unitário (R$) *</label>
+              <input
+                type="number"
+                className="field-input"
+                min="0"
+                step="0.01"
+                placeholder="0,00"
+                value={peca.valorUnitario || ''}
+                onChange={e => set('valorUnitario', parseFloat(e.target.value) || 0)}
+              />
+            </div>
+          </div>
           <div className="opcao-group">
             <label className="field-label">Observações</label>
             <textarea
@@ -292,6 +320,14 @@ function FormPeca({ peca, index, config, onChange, onRemover }) {
               value={peca.observacoes || ''}
               onChange={e => set('observacoes', e.target.value)}
             />
+          </div>
+          <div className="preco-display" style={{ marginTop: 12 }}>
+            <div className="preco-breakdown">
+              <div className="preco-linha preco-card-total">
+                <span>{peca.quantidade || 1} {(peca.quantidade || 1) === 1 ? 'unidade' : 'unidades'}</span>
+                <span>{formatarMoeda((peca.valorUnitario || 0) * (peca.quantidade || 1))}</span>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -371,6 +407,16 @@ function FormPeca({ peca, index, config, onChange, onRemover }) {
               />
             </div>
           )}
+          {(peca.estampaTipo === 'Olívia' || peca.estampaTipo === 'Amaury') && (
+            <div className="estampa-cond" style={{ marginTop: 10 }}>
+              <label className="field-label">Cor do uniforme</label>
+              <PillGroup
+                options={peca.estampaTipo === 'Olívia' ? ['Preta', 'Branca'] : ['Preta', 'Cinza']}
+                value={peca.estampaCor || ''}
+                onChange={v => set('estampaCor', v)}
+              />
+            </div>
+          )}
         </div>
       )}
 
@@ -411,7 +457,7 @@ function FormPeca({ peca, index, config, onChange, onRemover }) {
       </div>)}
 
       {/* ── Preço ── */}
-      {peca.tipo !== 'Serviço avulso' && (
+      {peca.tipo !== 'Serviço avulso' && peca.tipo !== 'Bandeira' && (
         <div className="preco-section">
           <PrecoDisplay peca={peca} config={config} />
           <div className="produto-desconto-wrap" style={{ marginTop: 10 }}>
@@ -481,7 +527,7 @@ export default function ModalNovoPedido({ configPrecos, onSalvar, onFechar }) {
     setPecas(ps => ps.filter((_, i) => i !== index))
   }
 
-  async function salvar() {
+  async function salvar(tipoSalvar = 'producao') {
     if (!clienteSel)       { alert('Selecione um cliente.'); return }
     if (!prazoISO)         { alert('Informe o prazo de entrega.'); return }
     if (pecas.length === 0) { alert('Adicione ao menos uma peça.'); return }
@@ -489,7 +535,7 @@ export default function ModalNovoPedido({ configPrecos, onSalvar, onFechar }) {
     const prazoFormatado = new Date(prazoISO + 'T12:00:00').toLocaleDateString('pt-BR')
 
     const pecasFinais = pecas.map(p => {
-      if (p.tipo === 'Serviço avulso') {
+      if (p.tipo === 'Serviço avulso' || p.tipo === 'Bandeira') {
         return { ...p, precoCalculado: p.valorUnitario, descontoPercentual: 0 }
       }
       const { precoCalculado } = configPrecos ? calcularPrecoPeca(p, configPrecos) : { precoCalculado: 0 }
@@ -505,6 +551,7 @@ export default function ModalNovoPedido({ configPrecos, onSalvar, onFechar }) {
       prazo:     prazoFormatado,
       prazoISO,
       pecas:     pecasFinais,
+      tipoSalvar,
     }
 
     setSalvando(true)
@@ -513,20 +560,18 @@ export default function ModalNovoPedido({ configPrecos, onSalvar, onFechar }) {
   }
 
   const totalGeral = pecas.reduce((acc, p) => {
-    if (p.tipo === 'Serviço avulso') {
+    if (p.tipo === 'Serviço avulso' || p.tipo === 'Bandeira') {
       return acc + (p.valorUnitario || 0) * (p.quantidade || 1)
     }
     const { precoCalculado } = configPrecos ? calcularPrecoPeca(p, configPrecos) : { precoCalculado: 0 }
     const desc = Math.min(p.desconto || 0, configPrecos?.descontoMaximo || 0)
-    const qtd  = p.tipo === 'Bandeira'
-      ? (p.quantidade || 1)
-      : Object.values(p.tamanhos || {}).reduce((s, v) => s + v, 0)
+    const qtd  = Object.values(p.tamanhos || {}).reduce((s, v) => s + v, 0)
     return acc + precoCalculado * (1 - desc / 100) * qtd
   }, 0)
 
   return (
     <>
-      <div className="modal-overlay visible" onClick={e => e.target === e.currentTarget && onFechar()}>
+      <div className="modal-overlay visible">
         <div className="modal-form-container" style={{ maxHeight: '90vh', overflowY: 'auto' }}>
 
           <div className="modal-form-header">
@@ -630,8 +675,11 @@ export default function ModalNovoPedido({ configPrecos, onSalvar, onFechar }) {
           </div>
 
           <div className="modal-form-actions">
-            <button className="modal-btn modal-btn-cancel" onClick={onFechar}>Cancelar</button>
-            <button className="modal-btn modal-btn-confirm" onClick={salvar} disabled={salvando}>
+            <button className="modal-btn modal-btn-cancel" onClick={onFechar} disabled={salvando}>Cancelar</button>
+            <button className="modal-btn modal-btn-secondary" onClick={() => salvar('orcamento')} disabled={salvando}>
+              {salvando ? 'Salvando...' : 'Salvar orçamento'}
+            </button>
+            <button className="modal-btn modal-btn-confirm" onClick={() => salvar('producao')} disabled={salvando}>
               {salvando ? 'Salvando...' : 'Salvar pedido'}
             </button>
           </div>

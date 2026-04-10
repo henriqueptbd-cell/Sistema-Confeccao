@@ -26,7 +26,8 @@ export const ETAPA_PILL = {
   'Pronto para retirada': 'pill-green',
 }
 
-export const MATERIAIS_CAMISETA = ['Dry', 'Confort UV50', 'Crepe', 'PV']
+export const MATERIAIS_CAMISETA  = ['Dry', 'Confort UV50', 'Crepe', 'PV']
+export const MATERIAIS_BANDEIRA  = ['Dry', 'Gabardine']
 export const ESTAMPA_TIPOS      = ['Personalizado', 'Olívia', 'Amaury']
 export const TAM_ADULTO_MASC    = ['P', 'M', 'G', 'GG', 'XG', 'EXG']
 export const TAM_ADULTO_FEM     = ['BLP', 'BLM', 'BLG', 'BLGG', 'BLXG']

@@ -180,6 +180,9 @@ export default function DetalhePedido() {
               {p.valorUnitario > 0 && (
                 <div className="peca-valor">{formatarMoeda(p.valorUnitario)} / un.</div>
               )}
+              {p.observacoes && (
+                <div className="peca-obs">{p.observacoes}</div>
+              )}
             </div>
           ))}
         </div>

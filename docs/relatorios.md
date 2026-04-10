@@ -43,9 +43,11 @@ O bloco de Vendas é dividido em **3 subcategorias** que podem ser visualizadas 
 
 | Subcategoria | Descrição | Condição no banco |
 |---|---|---|
-| **A Receber** | Pedidos fechados sem pagamento confirmado | `status_fechado = true` + `pagamento_status = 'pendente'` |
+| **A Receber** | Pedidos fechados sem pagamento completo | `status_fechado = true` + `pagamento_status IN ('pendente', 'parcial')` |
 | **Entregues** | Pedidos que já foram entregues ao cliente | `data_entrega IS NOT NULL` |
 | **Recebidos** | Pedidos com pagamento confirmado | `pagamento_status = 'confirmado'` |
+
+> Pedidos com status `'parcial'` (entrada paga, saldo em aberto) entram em "A Receber". O valor exibido deve ser o **saldo restante** (`valor_total_pedido − total_pago`), não o valor total do pedido.
 
 > As subcategorias não são mutuamente exclusivas: um pedido pode estar "Entregue" e ainda "A Receber" (entregou mas ainda não pagou). Isso é intencional — dá a visão real da operação.
 
@@ -60,9 +62,11 @@ Para suportar as subcategorias, a tabela `pedidos` precisa de dois novos campos:
 ```sql
 ALTER TABLE pedidos
   ADD COLUMN pagamento_status VARCHAR(20) NOT NULL DEFAULT 'pendente'
-    CHECK (pagamento_status IN ('pendente', 'confirmado')),
+    CHECK (pagamento_status IN ('pendente', 'parcial', 'confirmado')),
   ADD COLUMN data_entrega TIMESTAMP;
 ```
+
+> Ver `pagamentos.md` para o schema completo do módulo de pagamentos, incluindo a tabela `pagamentos` e os triggers associados.
 
 > `data_entrega` é preenchida pelo Administrador quando o pedido é retirado/entregue.  
 > `pagamento_status` é atualizado pelo Administrador ao confirmar o recebimento.
@@ -205,3 +209,4 @@ src/
 |---|---|
 | 2026-03-29 | Documento criado — estrutura modular com presets |
 | 2026-03-30 | 🔄 Período alterado para intervalo livre com atalhos rápidos; adicionadas subcategorias de Vendas (A Receber / Entregues / Recebidos) com campos de schema; adicionado sistema de impressão global `usePrint` |
+| 2026-04-10 | 🔄 "A Receber" atualizado para incluir status `'parcial'` — pedidos com entrada paga mas saldo em aberto. CHECK do `pagamento_status` expandido. Referência ao `pagamentos.md`. |

@@ -91,6 +91,7 @@ export const listarCompras    = (mes, ano)   => req(`/api/compras${mes && ano ? 
 export const criarCompra      = (dados)      => req('/api/compras', json('POST', dados))
 export const atualizarCompra  = (id, dados)  => req(`/api/compras/${id}`, json('PUT', dados))
 export const excluirCompra    = (id)         => req(`/api/compras/${id}`, { method: 'DELETE' })
+export const darBaixaCompra   = (id)         => req(`/api/compras/${id}/baixa`, { method: 'PATCH' })
 
 // ── Usuários ─────────────────────────────────────────────────────────────────
 
